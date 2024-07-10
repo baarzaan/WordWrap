@@ -1,4 +1,13 @@
-import { doc, getDoc, onSnapshot, setDoc, updateDoc } from "firebase/firestore";
+import {
+  collection,
+  doc,
+  getDoc,
+  onSnapshot,
+  orderBy,
+  query,
+  setDoc,
+  updateDoc,
+} from "firebase/firestore";
 import { auth, db } from "../../firebase/firebaseConfig";
 import {
   AUTH_GET_USER_FAIL,
@@ -23,9 +32,19 @@ import {
   signInWithEmailAndPassword,
   signOut,
 } from "firebase/auth";
+import {
+  GET_FRIEND_REQUESTS_FAIL,
+  GET_FRIEND_REQUESTS_REQUEST,
+  GET_FRIEND_REQUESTS_SUCCESS,
+  GET_FRIENDS_FAIL,
+  GET_FRIENDS_REQUEST,
+  GET_FRIENDS_SUCCESS,
+} from "../constants/friendsConstants";
 
 export const getUser = () => (dispatch) => {
   dispatch({ type: AUTH_GET_USER_REQUEST });
+  dispatch({ type: GET_FRIENDS_REQUEST });
+  dispatch({ type: GET_FRIEND_REQUESTS_REQUEST });
 
   try {
     auth.onAuthStateChanged((currentUser) => {
@@ -35,10 +54,49 @@ export const getUser = () => (dispatch) => {
           currentUser = snapshot.data();
           dispatch({ type: AUTH_GET_USER_SUCCESS, payload: currentUser });
         });
+
+        // Get user friends
+        const userFriendsCollection = collection(
+          db,
+          `users/${currentUser.email}/friends`
+        );
+        onSnapshot(
+          query(userFriendsCollection, orderBy("createdAt", "desc")),
+          (snapshot) => {
+            const userFriends = snapshot.docs.map((doc) => ({
+              id: doc.id,
+              ...doc.data(),
+            }));
+            // console.log(userFriends)
+            dispatch({ type: GET_FRIENDS_SUCCESS, payload: userFriends });
+          }
+        );
+
+        // Get user frined requests
+        const userFriendRequestsCollection = collection(
+          db,
+          `users/${currentUser.email}/requests`
+        );
+        onSnapshot(
+          query(userFriendRequestsCollection, orderBy("createdAt", "desc")),
+          (snapshot) => {
+            const userFriendRequests = snapshot.docs.map((doc) => ({
+              id: doc.id,
+              ...doc.data(),
+            }));
+            // console.log(userFriendRequests)
+            dispatch({
+              type: GET_FRIEND_REQUESTS_SUCCESS,
+              payload: userFriendRequests,
+            });
+          }
+        );
       }
     });
   } catch (error) {
     dispatch({ type: AUTH_GET_USER_FAIL, payload: error.message });
+    dispatch({ type: GET_FRIENDS_FAIL, payload: error.message });
+    dispatch({ type: GET_FRIEND_REQUESTS_FAIL, payload: error.message });
   }
 };
 

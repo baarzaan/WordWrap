@@ -6,12 +6,8 @@ const HomeScreen = () => {
   const dispatch = useDispatch();
   const user = useSelector((state) => state.user.user);
   return (
-    <div>
+    <div className="flex flex-col gap-2 justify-center items-center h-full border border-red-500">
       home
-      <br />
-
-      <br />
-
       <button onClick={() => dispatch(logout())}>Logout</button>
     </div>
   );

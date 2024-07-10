@@ -4,21 +4,20 @@ import PrivateRoutes from "./routes/PrivateRoutes";
 import { useDispatch } from "react-redux";
 import { useEffect } from "react";
 import { getUser } from "./redux/actions/authActions";
-import SideBar from "./components/common/SideBar";
+import MainLayout from "./components/layout/MainLayout";
+import { getUsers } from "./redux/actions/usersActions";
 
 function App() {
   const dispatch = useDispatch();
 
   useEffect(() => {
     dispatch(getUser());
+    dispatch(getUsers());
   }, [dispatch]);
 
   return (
     <Router>
-      <div className="grid grid-cols-4 gap-4">
-        <aside>
-          <SideBar />
-        </aside>
+      <div className="">
         <Routes>
           {routes.map((route) => (
             <Route
@@ -26,7 +25,9 @@ function App() {
               path={route.path}
               element={
                 route.isPrivate ? (
-                  <PrivateRoutes>{route.element}</PrivateRoutes>
+                  <MainLayout>
+                    <PrivateRoutes>{route.element}</PrivateRoutes>
+                  </MainLayout>
                 ) : (
                   route.element
                 )
