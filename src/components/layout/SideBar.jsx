@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React from "react";
 import { AiOutlineUserAdd } from "react-icons/ai";
 import { FaRegPenToSquare } from "react-icons/fa6";
 import { useSelector } from "react-redux";
@@ -11,10 +11,12 @@ import {
 import { Button } from "@/components/ui/button";
 import UserDetails from "../UserDetails";
 import AddFriend from "../AddFriend";
+import FriendCard from "../FriendCard";
 
 const SideBar = () => {
   const user = useSelector((state) => state.user.user);
-  const [search, setSearch] = useState("");
+  const requests = useSelector((state) => state.friendRequests.requests);
+  const friends = useSelector((state) => state.friends.friends);
 
   return (
     <>
@@ -56,9 +58,13 @@ const SideBar = () => {
                   <PopoverTrigger asChild>
                     <Button
                       title="Add friend"
-                      className="bg-[#424242] p-1 w-10 h-10 flex justify-center items-center rounded-full transform transition-all ease-in-out duration-200 hover:opacity-80 active:scale-95"
+                      className="relative bg-[#424242] p-1 w-10 h-10 flex justify-center items-center rounded-full transform transition-all ease-in-out duration-200 hover:opacity-80 active:scale-95"
                     >
                       <AiOutlineUserAdd size={28} />
+
+                      <div className="absolute -top-4 left-0 bg-red-600 text-white w-5 h-5 flex justify-center items-center rounded-full">
+                        <p>{requests.length}</p>
+                      </div>
                     </Button>
                   </PopoverTrigger>
                   <PopoverContent className="w-full">
@@ -74,6 +80,16 @@ const SideBar = () => {
                 </button>
               </div>
             </div>
+          </div>
+
+          <div className="flex flex-col justify-start items-start gap-4 border-b border-b-[#707070] last:border-none w-full p-1">
+            {friends.map((friend) => (
+              <div key={friend.id} className="w-full">
+                {friend.requestStatus.isPending ? null : (
+                  <FriendCard friend={friend.friendData} />
+                )}
+              </div>
+            ))}
           </div>
         </div>
       ) : (

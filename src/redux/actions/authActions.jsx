@@ -2,6 +2,7 @@ import {
   collection,
   doc,
   getDoc,
+  getDocs,
   onSnapshot,
   orderBy,
   query,
@@ -123,6 +124,13 @@ export const login = (userData) => async (dispatch) => {
   } catch (error) {
     if (error.message === "Firebase: Error (auth/invalid-credential).") {
       dispatch({ type: AUTH_LOGIN_FAIL, payload: "Password wrong" });
+    } else if (
+      error.message == "Failed to get document because the client is offline."
+    ) {
+      dispatch({
+        type: AUTH_LOGIN_FAIL,
+        payload: "Failed to login because you are offline.",
+      });
     } else {
       dispatch({ type: AUTH_LOGIN_FAIL, payload: error.message });
     }
@@ -136,7 +144,11 @@ export const register = (userData) => async (dispatch) => {
     const userDoc = doc(db, "users", userData.email);
     const userSnapshot = await getDoc(userDoc);
 
-    if (!userSnapshot.exists()) {
+    const usersCollection = collection(db, "users");
+    const usersSnapshot = await getDocs(usersCollection);
+    const isUsernameExists = usersSnapshot.docs.find((doc) => doc.data().username == userData.username);
+
+    if (!userSnapshot.exists() && !isUsernameExists) {
       await createUserWithEmailAndPassword(
         auth,
         userData.email,
@@ -157,7 +169,17 @@ export const register = (userData) => async (dispatch) => {
       dispatch({ type: AUTH_REGISTER_FAIL, payload: "User already exists" });
     }
   } catch (error) {
-    dispatch({ type: AUTH_REGISTER_FAIL, payload: error.message });
+    if (
+      error.message == "Firebase: Error (auth/network-request-failed)." ||
+      error.message == "Failed to get document because the client is offline."
+    ) {
+      dispatch({
+        type: AUTH_REGISTER_FAIL,
+        payload: "Failed to register because you are offline.",
+      });
+    } else {
+      dispatch({ type: AUTH_REGISTER_FAIL, payload: error.message });
+    }
   }
 };
 

@@ -1,3 +1,4 @@
+import ChatScreen from "@/screens/ChatScreen";
 import ForgotPasswordScreen from "../screens/auth/ForgotPasswordScreen";
 import LoginScreen from "../screens/auth/LoginScreen";
 import RegisterScreen from "../screens/auth/RegisterScreen";
@@ -11,4 +12,6 @@ export const routes = [
   { path: "/register", element: <RegisterScreen />, isPrivate: false },
 
   { path: "/forgot-password", element: <ForgotPasswordScreen />, isPrivate: false },
+
+  { path: "/c/:friendUsername", element: <ChatScreen />, isPrivate: true },
 ];

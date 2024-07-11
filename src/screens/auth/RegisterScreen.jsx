@@ -72,7 +72,7 @@ const RegisterScreen = () => {
   return (
     <div className="flex justify-center items-center h-screen">
       <div className="flex flex-col gap-4 justify-start items-center w-[400px] border border-[#404040] rounded-lg p-2 bg-[#242423]">
-        <h2 className="text-2xl font-bold">Login</h2>
+        <h2 className="text-2xl font-bold">Register</h2>
         {error && <p className="text-red-600">{error}</p>}
 
         <form className="flex flex-col justify-center items-center gap-3">

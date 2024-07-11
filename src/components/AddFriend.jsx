@@ -4,16 +4,21 @@ import { useDispatch, useSelector } from "react-redux";
 import { IoIosAdd, IoIosCheckmark, IoIosClose } from "react-icons/io";
 import {
   acceptFriendRequest,
-  addFriendRequest,
+  rejectFriendRequest,
+  removeFriend,
+  toggleSendFriendRequest,
 } from "@/redux/actions/friendsActions";
+import { rejectFriendRequestReducer } from "@/redux/reducers/friendsReducers";
 
 const AddFriend = () => {
   const dispatch = useDispatch();
   const user = useSelector((state) => state.user.user);
-  const { success } = useSelector((state) => state.addFriendRequestReducer);
+  const success = useSelector(
+    (state) => state.toggleSendFriendRequestReducer.success
+  );
   const requests = useSelector((state) => state.friendRequests.requests);
   const friends = useSelector((state) => state.friends.friends);
-  const { loading, users, error } = useSelector((state) => state.users);
+  const users = useSelector((state) => state.users.users);
   const [search, setSearch] = useState("");
   const [filteredUsers, setFilteredUsers] = useState([]);
   const [isPending, startTransition] = useTransition();
@@ -44,10 +49,10 @@ const AddFriend = () => {
   };
 
   return (
-    <div className="w-full h-[150px] p-2 bg-[#424242] text-white rounded-lg flex flex-col justify-start items-start gap-3">
+    <div className="w-full h-[150px] overflow-y-auto p-2 bg-[#424242] text-white rounded-lg flex flex-col justify-start items-start gap-3">
       <div className="flex w-full border-b border-b-[#707070] py-2">
         <Input
-          value={search}
+          value={search.toLocaleLowerCase()}
           onChange={(e) => setSearch(e.target.value)}
           placeholder="Search"
         />
@@ -58,7 +63,7 @@ const AddFriend = () => {
           {isPending ? (
             <>Loading...</>
           ) : (
-            <div className="flex flex-col justify-center items-center gap-2 w-full border-b border-b-[#707070] pb-1.5 last:border-none">
+            <div className="flex flex-col justify-center items-center gap-4 w-full border-b border-b-[#707070] pb-1.5 last:border-none">
               {filteredUsers.map((filteredUser) => (
                 <div
                   key={filteredUser.id}
@@ -71,22 +76,45 @@ const AddFriend = () => {
                       className="w-8 h-8 rounded-full object-cover"
                       alt=""
                     />
+
                     <strong>
                       {truncateUsername(filteredUser.username, 10)}
                     </strong>
                   </div>
 
-                  {filteredUser.email != user.email && (
-                    <button
-                      title="Add friend"
-                      onClick={() => {
-                        dispatch(addFriendRequest(user, filteredUser));
-                        alert(success);
-                      }}
-                      className="bg-[#242423] rounded-full transform transition-all ease-in-out duration-300 hover:bg-[#242423]/75 active:scale-95"
-                    >
-                      <IoIosAdd size={24} />
-                    </button>
+                  {filteredUser.email != user?.email && (
+                    <>
+                      {friends.map((friend) => (
+                        <>
+                          {friend.friendData.email == filteredUser.email &&
+                          friend.requestStatus.isAccepted ? (
+                            <button
+                              title="Remove friend"
+                              onClick={() => {
+                                dispatch(removeFriend(user, filteredUser));
+                                alert("Friend removed successfully!");
+                              }}
+                              className="bg-[#242423] rounded-full transform transition-all ease-in-out duration-300 hover:bg-[#242423]/75 active:scale-95"
+                            >
+                              <IoIosClose size={24} />
+                            </button>
+                          ) : (
+                            <button
+                              title="Add friend"
+                              onClick={() => {
+                                dispatch(
+                                  toggleSendFriendRequest(user, filteredUser)
+                                );
+                                alert(success);
+                              }}
+                              className="bg-[#242423] rounded-full transform transition-all ease-in-out duration-300 hover:bg-[#242423]/75 active:scale-95"
+                            >
+                              <IoIosAdd size={24} />
+                            </button>
+                          )}
+                        </>
+                      ))}
+                    </>
                   )}
                 </div>
               ))}
@@ -97,7 +125,7 @@ const AddFriend = () => {
         <div className="flex flex-col justify-start items-start gap-2 w-full">
           <strong>Friend Requests ({requests.length})</strong>
           {requests.length > 0 ? (
-            <div className="w-full">
+            <div className="flex flex-col justify-center items-center border-b border-b-[#707070] last:border-none w-full">
               {requests.map((request) => (
                 <div
                   key={request.id}
@@ -117,7 +145,7 @@ const AddFriend = () => {
 
                   <div className="flex justify-center items-center gap-1">
                     <button
-                      title="Accept request"
+                      title="Accept friend request"
                       onClick={() =>
                         dispatch(acceptFriendRequest(user, request, request.id))
                       }
@@ -127,7 +155,13 @@ const AddFriend = () => {
                     </button>
 
                     <button
-                      title="Reject request"
+                      title="Reject friend request"
+                      onClick={() => {
+                        dispatch(
+                          rejectFriendRequest(user, request, request.id)
+                        );
+                        alert(success);
+                      }}
                       className="bg-[#242423] rounded-full transform transition-all ease-in-out duration-300 hover:bg-[#242423]/75 active:scale-95"
                     >
                       <IoIosClose size={24} />
@@ -137,7 +171,7 @@ const AddFriend = () => {
               ))}
             </div>
           ) : (
-            <p className="text-[#e4e4e5]">No frined requests yet!</p>
+            <p className="text-[#e4e4e5]">No friend requests yet!</p>
           )}
         </div>
       )}

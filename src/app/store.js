@@ -2,7 +2,8 @@ import { createStore, combineReducers, applyMiddleware } from "redux";
 import { thunk } from "redux-thunk";
 import { getUserReducer, loginReducer, logoutReducer, registerReducer, resetPasswordReducer } from "../redux/reducers/authReducers";
 import { getUsersReducer } from "@/redux/reducers/usersReducers";
-import { acceptFriendRequestReducer, addFriendRequestReducer, getFrinedRequestsReducer, getFrinedsReducer } from "@/redux/reducers/friendsReducers";
+import { acceptFriendRequestReducer, toggleSendFriendRequestReducer, getFrinedRequestsReducer, getFrinedsReducer, removeFriendReducers } from "@/redux/reducers/friendsReducers";
+import { getChatsReducer, sendChatReducer } from "@/redux/reducers/chatReducer";
 
 const rootReducers = combineReducers({
     user: getUserReducer,
@@ -11,10 +12,13 @@ const rootReducers = combineReducers({
     resetPasswordReducer,
     logoutReducer,
     users: getUsersReducer,
-    addFriendRequestReducer,
+    toggleSendFriendRequestReducer,
     friends: getFrinedsReducer,
     friendRequests: getFrinedRequestsReducer,
     acceptRequest: acceptFriendRequestReducer,
+    sendChatReducer,
+    chats: getChatsReducer,
+    removeFriendReducers,
 });
 
 const store = createStore(rootReducers, applyMiddleware(thunk))
