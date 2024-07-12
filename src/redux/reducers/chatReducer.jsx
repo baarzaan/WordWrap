@@ -5,6 +5,9 @@ import {
   GET_CHATS_REQUEST,
   GET_CHATS_SUCCESS,
   GET_CHATS_FAIL,
+  UPDATE_CHATS_REQUEST,
+  UPDATE_CHATS_SUCCESS,
+  UPDATE_CHATS_FAIL,
 } from "../constants/chatConstants";
 
 const initialState = {
@@ -55,6 +58,32 @@ export const getChatsReducer = (state = initialState, action) => {
       };
 
     case GET_CHATS_FAIL:
+      return {
+        ...state,
+        loading: false,
+        error: action.payload,
+      };
+
+    default:
+      return { ...state };
+  }
+};
+
+export const updateChatStatusReducer = (state = initialState, action) => {
+  switch (action.type) {
+    case UPDATE_CHATS_REQUEST:
+      return {
+        ...state,
+        loading: true,
+      };
+
+    case UPDATE_CHATS_SUCCESS:
+      return {
+        ...state,
+        loading: false,
+      };
+
+    case UPDATE_CHATS_FAIL:
       return {
         ...state,
         loading: false,

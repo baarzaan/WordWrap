@@ -82,9 +82,9 @@ const SideBar = () => {
             </div>
           </div>
 
-          <div className="flex flex-col justify-start items-start gap-4 border-b border-b-[#707070] last:border-none w-full p-1">
+          <div className="flex flex-col justify-start items-start gap-4 w-full p-1">
             {friends.map((friend) => (
-              <div key={friend.id} className="w-full">
+              <div key={friend.id} className="w-full border-b border-b-[#404040] last:border-none">
                 {friend.requestStatus.isPending ? null : (
                   <FriendCard friend={friend.friendData} />
                 )}

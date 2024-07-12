@@ -3,7 +3,7 @@ import { thunk } from "redux-thunk";
 import { getUserReducer, loginReducer, logoutReducer, registerReducer, resetPasswordReducer } from "../redux/reducers/authReducers";
 import { getUsersReducer } from "@/redux/reducers/usersReducers";
 import { acceptFriendRequestReducer, toggleSendFriendRequestReducer, getFrinedRequestsReducer, getFrinedsReducer, removeFriendReducers } from "@/redux/reducers/friendsReducers";
-import { getChatsReducer, sendChatReducer } from "@/redux/reducers/chatReducer";
+import { getChatsReducer, sendChatReducer, updateChatStatusReducer } from "@/redux/reducers/chatReducer";
 
 const rootReducers = combineReducers({
     user: getUserReducer,
@@ -19,6 +19,7 @@ const rootReducers = combineReducers({
     sendChatReducer,
     chats: getChatsReducer,
     removeFriendReducers,
+    updateChatStatusReducer,
 });
 
 const store = createStore(rootReducers, applyMiddleware(thunk))
