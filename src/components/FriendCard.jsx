@@ -1,47 +1,47 @@
-import { db } from "@/firebase/firebaseConfig";
 import {
-  collection,
-  limit,
-  onSnapshot,
-  orderBy,
-  query,
-} from "firebase/firestore";
+  getChatId,
+  getMessages,
+  createChat,
+} from "@/redux/actions/chatActions";
 import React, { useEffect, useState } from "react";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { Link } from "react-router-dom";
+import ReactTimeago from "react-timeago";
 
 const FriendCard = ({ friend }) => {
-  const [lastChat, setLastChat] = useState([]);
+  const dispatch = useDispatch();
   const user = useSelector((state) => state.user.user);
+  const [chatId, setChatId] = useState(null);
+  const messages = useSelector(
+    (state) => state.getMessagesReducer.messages[chatId] || []
+  );
+  const loading = useSelector((state) => state.getMessagesReducer.loading);
 
-  const getLastChat = async () => {
-    try {
-      const chatCollection = collection(
-        db,
-        `chats/${user.email}/friends/${friend.email}/chats`
-      );
-      onSnapshot(
-        query(chatCollection, orderBy("createdAt", "desc"), limit(1)),
-        (snapshot) => {
-          const lastChat = snapshot.docs.map((doc) => ({
-            id: doc.id,
-            ...doc.data(),
-          }));
-          setLastChat(lastChat);
-        }
-      );
-    } catch (error) {
-      console.error(error.message);
+  const fetchChatId = async () => {
+    let id = await dispatch(getChatId(user?.username, friend?.username));
+    if (!id) {
+      id = await dispatch(createChat(user?.username, friend?.username));
     }
+
+    setChatId(id);
+
+    const unsubscribe = dispatch(getMessages(id));
+    return () => unsubscribe();
   };
 
   useEffect(() => {
-    getLastChat();
-  }, [lastChat]);
+    if (user && friend) {
+      fetchChatId();
+    }
+  }, [user, friend]);
+
+  const truncateMessageText = (message, n) => {
+    return message.length > n ? message.slice(0, n) + "..." : message;
+  };
 
   return (
     <Link
-      to={`/c/${friend.username}`}
+      to={`/c/${chatId}`}
       className="flex justify-start items-center gap-2 w-full p-1 transform transition-all ease-in-out duration-200 hover:bg-[#414040] hover:rounded-lg active:scale-95"
     >
       <img
@@ -52,30 +52,36 @@ const FriendCard = ({ friend }) => {
 
       <div className="flex flex-col justify-start items-start">
         <strong>{friend.username}</strong>
-
-        <div className="flex justify-center items-center gap-1.5">
-          {lastChat.slice(0, 1).map((chat) => (
-            <div
-              className={`font-semibold ${
-                chat.isRead && chat.receiver.email != user?.email
-                  ? ""
-                  : "text-[#4450B5]"
-              }`}
-            >
-              {chat.isRead && chat.receiver.email != user?.email ? (
-                <p>
-                  {chat.sender.email == user?.email
-                    ? `You: ${chat.chat}`
-                    : chat.chat}
-                </p>
-              ) : (
-                "New chat"
-              )}
+        {messages.slice(0, 1).map((message) => (
+          <div
+            key={message.id}
+            className="flex justify-center items-center gap-1.5"
+          >
+            <div className={`font-semibold`}>
+              <div className="">
+                {message.sender.username === user?.username ? (
+                  <p>You: {truncateMessageText(message.message, 10)}</p>
+                ) : (
+                  <div className="">
+                    {message.isRead ? (
+                      <p>{truncateMessageText(message.message, 10)}</p>
+                    ) : (
+                      <p className="text-[#4450B5]">New chat</p>
+                    )}
+                  </div>
+                )}
+              </div>
             </div>
-          ))}
-          <p className="text-[#C1C1C1]">·</p>
-          <p className="text-[#C1C1C1]">4m</p>
-        </div>
+            <p className="text-[#C1C1C1]">·</p>
+            <p className="text-[#C1C1C1]">
+              <ReactTimeago
+                date={new Date(message.createdAt?.toDate().toUTCString())}
+              />
+            </p>
+          </div>
+        ))}
+
+        {loading && <>Loading...</>}
       </div>
     </Link>
   );

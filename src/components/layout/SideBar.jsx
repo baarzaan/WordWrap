@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useCallback, useEffect, useState, useTransition } from "react";
 import { AiOutlineUserAdd } from "react-icons/ai";
 import { FaRegPenToSquare } from "react-icons/fa6";
 import { useSelector } from "react-redux";
@@ -17,18 +17,40 @@ const SideBar = () => {
   const user = useSelector((state) => state.user.user);
   const requests = useSelector((state) => state.friendRequests.requests);
   const friends = useSelector((state) => state.friends.friends);
+  const [search, setSearch] = useState("");
+  const [filteredUsers, setFilteredUsers] = useState([]);
+  const [isPending, startTransition] = useTransition();
+
+  const searchFriend = useCallback(() => {
+    try {
+      startTransition(() => {
+        const filteredUsers = friends.filter((friend) =>
+          friend.friendData.username
+            .toLowerCase()
+            .includes(search.toLocaleLowerCase())
+        );
+        setFilteredUsers(filteredUsers);
+      });
+    } catch (error) {
+      console.error(error.message);
+    }
+  }, [search, friends]);
+
+  useEffect(() => {
+    searchFriend();
+  }, [searchFriend]);
 
   return (
     <>
       {user ? (
         <div className="sticky top-0 left-0 w-full h-screen bg-[#242423] flex flex-col justify-start items-start px-2 py-4 gap-5">
-          <div className="flex flex-col justify-center items-center gap-3 w-full border-b border-b-[#2a2a2a] p-1">
+          <div className="flex flex-col justify-center items-center gap-3 w-full border-b border-b-[#2a2a2a]">
             <Link to="/" className="text-3xl font-bold">
               LOGO
             </Link>
 
-            <div className="flex justify-between items-center w-full">
-              <div className="relative">
+            <div className="flex justify-between items-center w-full pb-1">
+              <div className="relative flex justify-center items-center">
                 <Popover>
                   <PopoverTrigger asChild>
                     <Button variant="default">
@@ -43,13 +65,13 @@ const SideBar = () => {
                     <UserDetails user={user} />
                   </PopoverContent>
                 </Popover>
-              </div>
 
-              <div>
                 <input
                   type="text"
                   placeholder="Search"
-                  className="bg-transparent w-full px-5 py-2 border border-[#404040] rounded-md"
+                  value={search}
+                  onChange={(e) => setSearch(e.target.value)}
+                  className="bg-transparent p-2 border border-[#404040] rounded-md"
                 />
               </div>
 
@@ -83,13 +105,22 @@ const SideBar = () => {
           </div>
 
           <div className="flex flex-col justify-start items-start gap-4 w-full p-1">
-            {friends.map((friend) => (
-              <div key={friend.id} className="w-full border-b border-b-[#404040] last:border-none">
-                {friend.requestStatus.isPending ? null : (
-                  <FriendCard friend={friend.friendData} />
-                )}
+            {isPending ? (
+              <>Loading...</>
+            ) : (
+              <div className="w-full">
+                {filteredUsers.map((friend) => (
+                  <div
+                    key={friend.id}
+                    className="w-full border-b border-b-[#404040] last:border-none"
+                  >
+                    {friend.requestStatus.isPending ? null : (
+                      <FriendCard friend={friend.friendData} />
+                    )}
+                  </div>
+                ))}
               </div>
-            ))}
+            )}
           </div>
         </div>
       ) : (

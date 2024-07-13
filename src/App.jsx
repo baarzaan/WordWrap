@@ -6,6 +6,7 @@ import { useEffect } from "react";
 import { getUser } from "./redux/actions/authActions";
 import MainLayout from "./components/layout/MainLayout";
 import { getUsers } from "./redux/actions/usersActions";
+import { getChats } from "./redux/actions/chatActions";
 
 function App() {
   const dispatch = useDispatch();
@@ -13,6 +14,7 @@ function App() {
   useEffect(() => {
     dispatch(getUser());
     dispatch(getUsers());
+    dispatch(getChats());
   }, [dispatch]);
 
   return (

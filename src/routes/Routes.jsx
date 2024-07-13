@@ -13,5 +13,5 @@ export const routes = [
 
   { path: "/forgot-password", element: <ForgotPasswordScreen />, isPrivate: false },
 
-  { path: "/c/:friendUsername", element: <ChatScreen />, isPrivate: true },
+  { path: "/c/:chatId", element: <ChatScreen />, isPrivate: true },
 ];
