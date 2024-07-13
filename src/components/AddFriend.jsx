@@ -9,6 +9,7 @@ import {
   toggleSendFriendRequest,
 } from "@/redux/actions/friendsActions";
 import { rejectFriendRequestReducer } from "@/redux/reducers/friendsReducers";
+import { truncateText } from "@/utils/truncateText";
 
 const AddFriend = () => {
   const dispatch = useDispatch();
@@ -44,10 +45,6 @@ const AddFriend = () => {
     searchUser();
   }, [searchUser]);
 
-  const truncateUsername = (username, n) => {
-    return username.length > n ? username.slice(0, n) + "..." : username;
-  };
-
   return (
     <div className="w-full h-[150px] overflow-y-auto p-2 bg-[#424242] text-white rounded-lg flex flex-col justify-start items-start gap-3">
       <div className="flex w-full border-b border-b-[#707070] py-2">
@@ -77,9 +74,7 @@ const AddFriend = () => {
                       alt=""
                     />
 
-                    <strong>
-                      {truncateUsername(filteredUser.username, 10)}
-                    </strong>
+                    <strong>{truncateText(filteredUser.username, 10)}</strong>
                   </div>
 
                   {filteredUser.email != user?.email && (
@@ -139,7 +134,7 @@ const AddFriend = () => {
                       alt=""
                     />
                     <strong>
-                      {truncateUsername(request.friendData.username, 10)}
+                      {truncateText(request.friendData.username, 10)}
                     </strong>
                   </div>
 

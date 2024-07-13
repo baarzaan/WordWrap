@@ -22,6 +22,9 @@ import {
   GET_MESSAGES_FAIL,
   DELETE_MESSAGE_REQUEST,
   DELETE_MESSAGE_SUCCESS,
+  UPDATE_MESSAGE_STATUS_REQUEST,
+  UPDATE_MESSAGE_STATUS_SUCCESS,
+  UPDATE_MESSAGE_STATUS_FAIL,
 } from "../constants/chatConstants";
 
 const initialState = {
@@ -228,6 +231,32 @@ export const deleteMessageReducer = (state = initialState, action) => {
       };
 
     case DELETE_MESSAGE_SUCCESS:
+      return {
+        ...state,
+        loading: false,
+        error: action.payload,
+      };
+
+    default:
+      return { ...state };
+  }
+};
+
+export const updateMessageStatusReducer = (state = initialState, action) => {
+  switch (action.type) {
+    case UPDATE_MESSAGE_STATUS_REQUEST:
+      return {
+        ...state,
+        loading: true,
+      };
+
+    case UPDATE_MESSAGE_STATUS_SUCCESS:
+      return {
+        ...state,
+        loading: false,
+      };
+
+    case UPDATE_MESSAGE_STATUS_FAIL:
       return {
         ...state,
         loading: false,

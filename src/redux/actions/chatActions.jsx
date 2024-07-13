@@ -8,6 +8,7 @@ import {
   orderBy,
   query,
   serverTimestamp,
+  updateDoc,
   where,
 } from "firebase/firestore";
 import {
@@ -29,6 +30,9 @@ import {
   SEND_MESSAGE_FAIL,
   SEND_MESSAGE_REQUEST,
   SEND_MESSAGE_SUCCESS,
+  UPDATE_MESSAGE_STATUS_FAIL,
+  UPDATE_MESSAGE_STATUS_REQUEST,
+  UPDATE_MESSAGE_STATUS_SUCCESS,
 } from "../constants/chatConstants";
 import { db } from "@/firebase/firebaseConfig";
 
@@ -43,11 +47,11 @@ export const getChats = () => async (dispatch) => {
         ...doc.data(),
       }));
       dispatch({ type: GET_CHATS_SUCCESS, payload: chats });
-    })
-  } catch(error){
+    });
+  } catch (error) {
     dispatch({ type: GET_CHATS_FAIL, payload: error.message });
   }
-}
+};
 
 export const getChatId = (currentUser, userToSendChat) => async (dispatch) => {
   dispatch({ type: GET_CHAT_ID_REQUEST });
@@ -109,7 +113,10 @@ export const sendMessage =
 
       const messageCollection = collection(db, `chats/${chatId}/messages`);
       await addDoc(messageCollection, messageData);
-      dispatch({ type: SEND_MESSAGE_SUCCESS, payload: { chatId, messageData } });
+      dispatch({
+        type: SEND_MESSAGE_SUCCESS,
+        payload: { chatId, messageData },
+      });
     } catch (error) {
       dispatch({ type: SEND_MESSAGE_FAIL, payload: error.message });
     }
@@ -142,7 +149,34 @@ export const deleteMessage = (chatId, messageId) => async (dispatch) => {
     const messageDoc = doc(db, `chats/${chatId}/messages/${messageId}`);
     await deleteDoc(messageDoc, messageId);
     dispatch({ type: DELETE_MESSAGE_SUCCESS, payload: { chatId, messageId } });
-  } catch(error){
+  } catch (error) {
     dispatch({ type: DELETE_MESSAGE_FAIL, payload: error.message });
   }
-}
+};
+
+export const updateMessageStatus =
+  (chatId, currentUserEmail) => async (dispatch) => {
+    dispatch({ type: UPDATE_MESSAGE_STATUS_REQUEST });
+
+    try {
+      if (chatId && currentUserEmail) {
+        const messagesCollection = collection(db, `chats/${chatId}/messages`);
+        const messagesSnapshot = await getDocs(messagesCollection);
+        const updatePromises = messagesSnapshot.docs.map((doc) => {
+          const message = doc.data();
+          if (message.receiver.email == currentUserEmail && !message.isRead) {
+            return updateDoc(doc.ref, { isRead: true });
+          }
+          return null;
+        });
+
+        await Promise.all(updatePromises);
+
+        dispatch({
+          type: UPDATE_MESSAGE_STATUS_SUCCESS,
+        });
+      }
+    } catch (error) {
+      dispatch({ type: UPDATE_MESSAGE_STATUS_FAIL, payload: error.message });
+    }
+  };

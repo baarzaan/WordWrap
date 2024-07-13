@@ -3,6 +3,7 @@ import {
   getMessages,
   createChat,
 } from "@/redux/actions/chatActions";
+import { truncateText } from "@/utils/truncateText";
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Link } from "react-router-dom";
@@ -35,10 +36,6 @@ const FriendCard = ({ friend }) => {
     }
   }, [user, friend]);
 
-  const truncateMessageText = (message, n) => {
-    return message.length > n ? message.slice(0, n) + "..." : message;
-  };
-
   return (
     <Link
       to={`/c/${chatId}`}
@@ -60,11 +57,11 @@ const FriendCard = ({ friend }) => {
             <div className={`font-semibold`}>
               <div className="">
                 {message.sender.username === user?.username ? (
-                  <p>You: {truncateMessageText(message.message, 10)}</p>
+                  <p>You: {truncateText(message.message, 10)}</p>
                 ) : (
                   <div className="">
                     {message.isRead ? (
-                      <p>{truncateMessageText(message.message, 10)}</p>
+                      <p>{truncateText(message.message, 10)}</p>
                     ) : (
                       <p className="text-[#4450B5]">New chat</p>
                     )}

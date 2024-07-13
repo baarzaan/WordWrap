@@ -10,7 +10,9 @@ const MessageCard = ({ message, chatId }) => {
 
   return (
     <div
-      title={message.isRead && "Seen"}
+      title={
+        message.sender.email == user?.email ? null : message.isRead && "Seen"
+      }
       className="flex gap-2 p-2 w-[300px] max-w-lg bg-[#2a2a2a] rounded-lg"
     >
       <img

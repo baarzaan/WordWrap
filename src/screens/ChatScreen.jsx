@@ -4,6 +4,7 @@ import {
   getChatId,
   sendMessage,
   getMessages,
+  updateMessageStatus,
 } from "@/redux/actions/chatActions";
 import React, { useEffect, useState } from "react";
 import { IoIosArrowBack, IoIosInformationCircleOutline } from "react-icons/io";
@@ -33,9 +34,8 @@ const ChatScreen = () => {
     if (foundChat && foundChat.participants) {
       const participantUsernames = foundChat.participants;
 
-      const foundFriend = friends.find(
-        (friend) =>
-          participantUsernames.includes(friend.friendData.username)
+      const foundFriend = friends.find((friend) =>
+        participantUsernames.includes(friend.friendData.username)
       );
       setFriend(foundFriend);
     }
@@ -43,7 +43,11 @@ const ChatScreen = () => {
 
   useEffect(() => {
     getChat();
-  }, [chats, chatId, friends]);
+
+    if (chatId && user) {
+      dispatch(updateMessageStatus(chatId, user.email));
+    }
+  }, [chats, chatId, friends, user]);
 
   const fetchChatId = async () => {
     const unsubscribe = dispatch(getMessages(chatId));
