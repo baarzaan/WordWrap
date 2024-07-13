@@ -1,7 +1,7 @@
 import React, { useCallback, useEffect, useState, useTransition } from "react";
 import { AiOutlineUserAdd } from "react-icons/ai";
 import { FaRegPenToSquare } from "react-icons/fa6";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { Link } from "react-router-dom";
 import {
   Popover,
@@ -12,14 +12,20 @@ import { Button } from "@/components/ui/button";
 import UserDetails from "../UserDetails";
 import AddFriend from "../AddFriend";
 import FriendCard from "../FriendCard";
+import { Dialog, DialogTrigger } from "@radix-ui/react-dialog";
+import CreateGroupDialog from "../CreateGroupDialog";
+import { getGroups } from "@/redux/actions/groupActions";
 
 const SideBar = () => {
+  const dispatch = useDispatch();
   const user = useSelector((state) => state.user.user);
+  const users = useSelector((state) => state.users.users);
   const requests = useSelector((state) => state.friendRequests.requests);
   const friends = useSelector((state) => state.friends.friends);
   const [search, setSearch] = useState("");
   const [filteredUsers, setFilteredUsers] = useState([]);
   const [isPending, startTransition] = useTransition();
+  const groups = useSelector((state) => state.getGroups.groups);
 
   const searchFriend = useCallback(() => {
     try {
@@ -39,6 +45,10 @@ const SideBar = () => {
   useEffect(() => {
     searchFriend();
   }, [searchFriend]);
+
+  useEffect(() => {
+    dispatch(getGroups(user?.username));
+  }, [dispatch]);
 
   return (
     <>
@@ -94,12 +104,17 @@ const SideBar = () => {
                   </PopoverContent>
                 </Popover>
 
-                <button
-                  title="Create group"
-                  className="bg-[#424242] p-1 w-10 h-10 flex justify-center items-center rounded-full transform transition-all ease-in-out duration-200 hover:opacity-80 active:scale-95"
-                >
-                  <FaRegPenToSquare size={24} />
-                </button>
+                <Dialog>
+                  <DialogTrigger asChild>
+                    <Button
+                      title="Create group"
+                      className="bg-[#424242] p-1 w-10 h-10 flex justify-center items-center rounded-full transform transition-all ease-in-out duration-200 hover:opacity-80 active:scale-95"
+                    >
+                      <FaRegPenToSquare size={24} />
+                    </Button>
+                  </DialogTrigger>
+                  <CreateGroupDialog />
+                </Dialog>
               </div>
             </div>
           </div>
@@ -122,6 +137,17 @@ const SideBar = () => {
               </div>
             )}
           </div>
+
+          
+          {groups.map((group) => (
+            <Link to={`/c/${group.id}`} className="flex justify-center items-center gap-2">
+              <div>
+                {group.participants}
+
+                {group.groupName}
+              </div>
+            </Link>
+          ))}
         </div>
       ) : (
         <></>
