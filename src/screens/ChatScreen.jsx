@@ -21,6 +21,7 @@ const ChatScreen = () => {
   const [chat, setChat] = useState(null);
   const user = useSelector((state) => state.user.user);
   const friends = useSelector((state) => state.friends.friends);
+  const users = useSelector((state) => state.users.users);
   const [participants, setParticipants] = useState([]);
   const [message, setMessage] = useState("");
   const messages = useSelector(
@@ -31,8 +32,9 @@ const ChatScreen = () => {
   const navigate = useNavigate();
   const chats = useSelector((state) => state.chats.chats);
   const groups = useSelector((state) => state.getGroups.groups);
+  const [group, setGroup] = useState(null);
   const groupMessages = useSelector(
-    (state) => state.getGroupMessagesReducer?.messages?.[chatId] || []
+    (state) => state.groupMessages?.messages?.[chatId] || []
   );
 
   const getChat = () => {
@@ -49,6 +51,7 @@ const ChatScreen = () => {
       setParticipants(foundParticipant);
     } else if (foundGroup) {
       setChat(foundGroup);
+      setGroup(foundGroup);
       const groupParticipants = foundGroup.participants;
 
       const foundGroupParticipant = friends.filter((friend) =>
@@ -100,18 +103,53 @@ const ChatScreen = () => {
                   </button>
 
                   {participants && (
-                    <>
-                      {participants.map((participant) => (
-                        <React.Fragment key={participant.friendData.username}>
-                          <img
-                            src={participant.friendData.photoURL}
-                            className="w-8 h-8 rounded-full object-cover"
-                            alt=""
-                          />
-                          <strong>{participant.friendData.username}</strong>
-                        </React.Fragment>
-                      ))}
-                    </>
+                    <React.Fragment>
+                      {!group ? (
+                        <>
+                          {participants
+                            .filter(
+                              (participant) =>
+                                participant.friendData.username !=
+                                user?.username
+                            )
+                            .map((participant) => (
+                              <React.Fragment
+                                key={participant.friendData.username}
+                              >
+                                <img
+                                  src={participant.friendData.photoURL}
+                                  className="w-8 h-8 rounded-full object-cover"
+                                  alt=""
+                                />
+                                <strong>
+                                  {participant.friendData.username}
+                                </strong>
+                              </React.Fragment>
+                            ))}
+                        </>
+                      ) : (
+                        <div className="flex justify-center items-center gap-2">
+                          {participants.map((participant) => (
+                            <div className="flex">
+                              <img
+                                title={
+                                  participant.friendData.firstName +
+                                  " " +
+                                  participant.friendData.lastName +
+                                  " " +
+                                  `@${participant.friendData.username}`
+                                }
+                                src={participant.friendData.photoURL}
+                                className="w-8 h-8 rounded-full object-cover"
+                                alt=""
+                              />
+                            </div>
+                          ))}
+
+                          <strong>{group?.groupName}</strong>
+                        </div>
+                      )}
+                    </React.Fragment>
                   )}
                 </div>
 

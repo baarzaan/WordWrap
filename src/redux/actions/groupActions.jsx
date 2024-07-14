@@ -99,6 +99,7 @@ export const getGroupMessages = (messageId) => async (dispatch) => {
           id: doc.id,
           ...doc.data(),
         }));
+        // console.log(messages);
         dispatch({
           type: GET_GROUP_MESSAGES_SUCCESS,
           payload: { messageId, messages },

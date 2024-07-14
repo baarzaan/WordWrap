@@ -24,6 +24,7 @@ const SideBar = () => {
   const friends = useSelector((state) => state.friends.friends);
   const [search, setSearch] = useState("");
   const [filteredUsers, setFilteredUsers] = useState([]);
+  const [filteredGroups, setFilteredGroups] = useState([]);
   const [isPending, startTransition] = useTransition();
   const groups = useSelector((state) => state.getGroups.groups);
   const [groupUsers, setGroupUsers] = useState([]);
@@ -41,6 +42,11 @@ const SideBar = () => {
             .includes(search.toLocaleLowerCase())
         );
         setFilteredUsers(filteredUsers);
+
+        const filteredGroups = groups.filter((group) =>
+          group.groupName.toLowerCase().includes(search.toLocaleLowerCase())
+        );
+        setFilteredGroups(filteredGroups);
       });
     } catch (error) {
       console.error(error.message);
@@ -54,7 +60,7 @@ const SideBar = () => {
   return (
     <>
       {user ? (
-        <div className="sticky top-0 left-0 w-full h-screen bg-[#242423] flex flex-col justify-start items-start px-2 py-4 gap-5">
+        <div className="sticky top-0 left-0 w-full h-screen overflow-y-clip bg-[#242423] flex flex-col justify-start items-start px-2 py-4 gap-5">
           <div className="flex flex-col justify-center items-center gap-3 w-full border-b border-b-[#2a2a2a]">
             <Link to="/" className="text-3xl font-bold">
               LOGO
@@ -120,7 +126,7 @@ const SideBar = () => {
             </div>
           </div>
 
-          <div className="flex flex-col justify-start items-start gap-4 w-full p-1">
+          <div className="flex flex-col justify-start items-start gap-4 w-full p-1 hover:overflow-y-auto">
             {isPending ? (
               <>Loading...</>
             ) : (
@@ -128,7 +134,7 @@ const SideBar = () => {
                 {filteredUsers.map((friend) => (
                   <div
                     key={friend.id}
-                    className="w-full border-b border-b-[#404040] last:border-none"
+                    className="w-full border-b border-b-[#404040]"
                   >
                     {friend.requestStatus.isPending ? null : (
                       <FriendCard friend={friend.friendData} />
@@ -137,23 +143,29 @@ const SideBar = () => {
                 ))}
               </div>
             )}
+
+            <>
+              {isPending ? (
+                <>Loading...</>
+              ) : (
+                <>
+                  {filteredGroups.map((group) => (
+                    <Link
+                      to={`/c/${group.id}`}
+                      className="flex justify-start items-center gap-2 border-b border-b-[#404040] w-full"
+                    >
+                      <div>
+                        {group.groupName}
+
+                        <br />
+                        <div className="p-2">{group.participants}</div>
+                      </div>
+                    </Link>
+                  ))}
+                </>
+              )}
+            </>
           </div>
-
-          {groups.map((group) => (
-            <Link
-              to={`/c/${group.id}`}
-              className="flex justify-center items-center gap-2"
-            >
-              <div>
-                {group.groupName}
-
-                <br />
-                <div className="p-2">
-                  {group.participants}
-                </div>
-              </div>
-            </Link>
-          ))}
         </div>
       ) : (
         <></>
