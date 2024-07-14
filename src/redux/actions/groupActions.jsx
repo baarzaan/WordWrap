@@ -1,6 +1,7 @@
 import {
   addDoc,
   collection,
+  getDocs,
   onSnapshot,
   orderBy,
   query,
@@ -10,9 +11,15 @@ import {
   CREATE_GROUP_FAIL,
   CREATE_GROUP_REQUEST,
   CREATE_GROUP_SUCCESS,
+  GET_GROUP_MESSAGES_FAIL,
+  GET_GROUP_MESSAGES_REQUEST,
+  GET_GROUP_MESSAGES_SUCCESS,
   GET_GROUPS_FAIL,
   GET_GROUPS_REQUEST,
   GET_GROUPS_SUCCESS,
+  SEND_MESSAGE_TO_GROUP_FAIL,
+  SEND_MESSAGE_TO_GROUP_REQUEST,
+  SEND_MESSAGE_TO_GROUP_SUCCESS,
 } from "../constants/groupConstants";
 import { db } from "@/firebase/firebaseConfig";
 
@@ -56,5 +63,49 @@ export const getGroups = (user) => async (dispatch) => {
     );
   } catch (error) {
     dispatch({ type: GET_GROUPS_FAIL, payload: error.message });
+  }
+};
+
+export const sendMessageToGroup =
+  (messageId, sender, receivers, message) => async (dispatch) => {
+    dispatch({ type: SEND_MESSAGE_TO_GROUP_REQUEST });
+
+    try {
+      const messageData = {
+        sender,
+        receivers,
+        message,
+        createdAt: new Date(),
+      };
+
+      const messagesCollcetion = collection(db, `groups/${messageId}/messages`);
+      await addDoc(messagesCollcetion, messageData);
+
+      dispatch({ type: SEND_MESSAGE_TO_GROUP_SUCCESS, payload: messageData });
+    } catch (error) {
+      dispatch({ type: SEND_MESSAGE_TO_GROUP_FAIL, payload: error.message });
+    }
+  };
+
+export const getGroupMessages = (messageId) => async (dispatch) => {
+  dispatch({ type: GET_GROUP_MESSAGES_REQUEST });
+
+  try {
+    const messagesCollection = collection(db, `groups/${messageId}/messages`);
+    onSnapshot(
+      query(messagesCollection, orderBy("createdAt", "desc")),
+      (snapshot) => {
+        const messages = snapshot.docs.map((doc) => ({
+          id: doc.id,
+          ...doc.data(),
+        }));
+        dispatch({
+          type: GET_GROUP_MESSAGES_SUCCESS,
+          payload: { messageId, messages },
+        });
+      }
+    );
+  } catch (error) {
+    dispatch({ type: GET_GROUP_MESSAGES_FAIL, payload: error.message });
   }
 };

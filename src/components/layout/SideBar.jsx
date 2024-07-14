@@ -26,6 +26,11 @@ const SideBar = () => {
   const [filteredUsers, setFilteredUsers] = useState([]);
   const [isPending, startTransition] = useTransition();
   const groups = useSelector((state) => state.getGroups.groups);
+  const [groupUsers, setGroupUsers] = useState([]);
+
+  useEffect(() => {
+    dispatch(getGroups(user?.username));
+  }, [dispatch, user?.username]);
 
   const searchFriend = useCallback(() => {
     try {
@@ -45,10 +50,6 @@ const SideBar = () => {
   useEffect(() => {
     searchFriend();
   }, [searchFriend]);
-
-  useEffect(() => {
-    dispatch(getGroups(user?.username));
-  }, [dispatch]);
 
   return (
     <>
@@ -138,13 +139,18 @@ const SideBar = () => {
             )}
           </div>
 
-          
           {groups.map((group) => (
-            <Link to={`/c/${group.id}`} className="flex justify-center items-center gap-2">
+            <Link
+              to={`/c/${group.id}`}
+              className="flex justify-center items-center gap-2"
+            >
               <div>
-                {group.participants}
-
                 {group.groupName}
+
+                <br />
+                <div className="p-2">
+                  {group.participants}
+                </div>
               </div>
             </Link>
           ))}

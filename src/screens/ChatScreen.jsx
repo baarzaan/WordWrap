@@ -6,6 +6,10 @@ import {
   getMessages,
   updateMessageStatus,
 } from "@/redux/actions/chatActions";
+import {
+  getGroupMessages,
+  sendMessageToGroup,
+} from "@/redux/actions/groupActions";
 import React, { useEffect, useState } from "react";
 import { IoIosArrowBack, IoIosInformationCircleOutline } from "react-icons/io";
 import { useDispatch, useSelector } from "react-redux";
@@ -17,7 +21,7 @@ const ChatScreen = () => {
   const [chat, setChat] = useState(null);
   const user = useSelector((state) => state.user.user);
   const friends = useSelector((state) => state.friends.friends);
-  const [friend, setFriend] = useState(null);
+  const [participants, setParticipants] = useState([]);
   const [message, setMessage] = useState("");
   const messages = useSelector(
     (state) => state.getMessagesReducer.messages[chatId] || []
@@ -26,18 +30,31 @@ const ChatScreen = () => {
   const error = useSelector((state) => state.getMessagesReducer.error);
   const navigate = useNavigate();
   const chats = useSelector((state) => state.chats.chats);
+  const groups = useSelector((state) => state.getGroups.groups);
+  const groupMessages = useSelector(
+    (state) => state.getGroupMessagesReducer?.messages?.[chatId] || []
+  );
 
   const getChat = () => {
     const foundChat = chats.find((chat) => chat.id === chatId);
-    setChat(foundChat);
+    const foundGroup = groups.find((group) => group.id === chatId);
 
-    if (foundChat && foundChat.participants) {
+    if (foundChat) {
+      setChat(foundChat);
       const participantUsernames = foundChat.participants;
 
-      const foundFriend = friends.find((friend) =>
+      const foundParticipant = friends.filter((friend) =>
         participantUsernames.includes(friend.friendData.username)
       );
-      setFriend(foundFriend);
+      setParticipants(foundParticipant);
+    } else if (foundGroup) {
+      setChat(foundGroup);
+      const groupParticipants = foundGroup.participants;
+
+      const foundGroupParticipant = friends.filter((friend) =>
+        groupParticipants.includes(friend.friendData.username)
+      );
+      setParticipants(foundGroupParticipant);
     }
   };
 
@@ -50,15 +67,20 @@ const ChatScreen = () => {
   }, [chats, chatId, friends, user]);
 
   const fetchChatId = async () => {
-    const unsubscribe = dispatch(getMessages(chatId));
-    return () => unsubscribe();
+    if (chats.find((chat) => chat.id === chatId)) {
+      const unsubscribe = dispatch(getMessages(chatId));
+      return () => unsubscribe();
+    } else if (groups.find((group) => group.id == chatId)) {
+      const unsubscribe = dispatch(getGroupMessages(chatId));
+      return () => unsubscribe();
+    }
   };
 
   useEffect(() => {
-    if (user && friend) {
+    if (user && participants) {
       fetchChatId();
     }
-  }, [user, friend]);
+  }, [user, participants]);
 
   return (
     <>
@@ -66,6 +88,7 @@ const ChatScreen = () => {
         <>
           {chat ? (
             <div className="relative flex flex-col justify-start items-start gap-10 p-2 h-screen w-full">
+              {/* Chat Header */}
               <header className="flex justify-between items-center w-full h-16 px-2 bg-[#242423] rounded-lg">
                 <div className="flex justify-center items-center gap-2">
                   <button
@@ -76,14 +99,18 @@ const ChatScreen = () => {
                     <IoIosArrowBack size={22} />
                   </button>
 
-                  {friend && (
+                  {participants && (
                     <>
-                      <img
-                        src={friend.friendData.photoURL}
-                        className="w-8 h-8 rounded-full object-cover"
-                        alt=""
-                      />
-                      <strong>{friend.friendData.username}</strong>
+                      {participants.map((participant) => (
+                        <React.Fragment key={participant.friendData.username}>
+                          <img
+                            src={participant.friendData.photoURL}
+                            className="w-8 h-8 rounded-full object-cover"
+                            alt=""
+                          />
+                          <strong>{participant.friendData.username}</strong>
+                        </React.Fragment>
+                      ))}
                     </>
                   )}
                 </div>
@@ -99,13 +126,21 @@ const ChatScreen = () => {
               </header>
 
               <div className="flex flex-col-reverse gap-3 overflow-y-auto h-[70%] w-full">
-                {messages.map((message) => (
-                  <MessageCard
-                    key={message.id}
-                    message={message}
-                    chatId={chatId}
-                  />
-                ))}
+                {chats.find((chat) => chat.id === chatId)
+                  ? messages.map((message) => (
+                      <MessageCard
+                        key={message.id}
+                        message={message}
+                        chatId={chatId}
+                      />
+                    ))
+                  : groupMessages.map((message) => (
+                      <MessageCard
+                        key={message.id}
+                        message={message}
+                        chatId={chatId}
+                      />
+                    ))}
 
                 {loading && <>Loading...</>}
                 {error && <p className="text-red-600">{error}</p>}
@@ -122,9 +157,29 @@ const ChatScreen = () => {
 
                 <button
                   onClick={() => {
-                    dispatch(
-                      sendMessage(chatId, user, friend?.friendData, message)
-                    );
+                    if (chats.find((chat) => chat.id === chatId)) {
+                      dispatch(
+                        sendMessage(
+                          chatId,
+                          user,
+                          participants.map(
+                            (participant) => participant.friendData
+                          ),
+                          message
+                        )
+                      );
+                    } else {
+                      dispatch(
+                        sendMessageToGroup(
+                          chatId,
+                          user,
+                          participants.map(
+                            (participant) => participant.friendData
+                          ),
+                          message
+                        )
+                      );
+                    }
                     setMessage("");
                   }}
                   disabled={message.trim() === ""}
