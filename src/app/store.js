@@ -2,9 +2,9 @@ import { createStore, combineReducers, applyMiddleware } from "redux";
 import { thunk } from "redux-thunk";
 import { getUserReducer, loginReducer, logoutReducer, registerReducer, resetPasswordReducer } from "../redux/reducers/authReducers";
 import { getUsersReducer } from "@/redux/reducers/usersReducers";
-import { acceptFriendRequestReducer, toggleSendFriendRequestReducer, getFrinedRequestsReducer, getFrinedsReducer, removeFriendReducers } from "@/redux/reducers/friendsReducers";
+import { acceptFriendRequestReducer, toggleSendFriendRequestReducer, getFrinedRequestsReducer, getFrinedsReducer, removeFriendReducer } from "@/redux/reducers/friendsReducers";
 import { createChatReducer, deleteMessageReducer, getChatIdReducer, getChatsReducer, getMessagesReducer, sendChatReducer, sendMessageReducer } from "@/redux/reducers/chatReducer";
-import { createGroupReducer, getGroupMessagesReducer, getGroupsReducer, sendMessageToGroupReducer } from "@/redux/reducers/groupReducers";
+import { createGroupReducer, deleteGroupMessageReducer, getGroupMessagesReducer, getGroupsReducer, sendMessageToGroupReducer, updateGroupMessageStatusReducer } from "@/redux/reducers/groupReducers";
 
 const rootReducers = combineReducers({
     user: getUserReducer,
@@ -19,7 +19,7 @@ const rootReducers = combineReducers({
     acceptRequest: acceptFriendRequestReducer,
     sendChatReducer,
     chats: getChatsReducer,
-    removeFriendReducers,
+    removeFriendReducer,
     getChatIdReducer,
     createChatReducer,
     sendMessageReducer,
@@ -28,7 +28,9 @@ const rootReducers = combineReducers({
     createGroup: createGroupReducer,
     getGroups: getGroupsReducer,
     sendMessageToGroupReducer,
-    groupMessages: getGroupMessagesReducer
+    groupMessages: getGroupMessagesReducer,
+    updateGroupMessageStatusReducer,
+    deleteGroupMessageReducer,
 });
 
 const store = createStore(rootReducers, applyMiddleware(thunk))

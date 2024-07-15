@@ -1,10 +1,11 @@
 import { deleteMessage } from "@/redux/actions/chatActions";
+import { deleteGroupMessage } from "@/redux/actions/groupActions";
 import React from "react";
 import { PiTrash } from "react-icons/pi";
 import { useDispatch, useSelector } from "react-redux";
 import ReactTimeago from "react-timeago";
 
-const MessageCard = ({ message, chatId }) => {
+const MessageCard = ({ message, chatId, group }) => {
   const dispatch = useDispatch();
   const user = useSelector((state) => state.user.user);
 
@@ -35,7 +36,11 @@ const MessageCard = ({ message, chatId }) => {
           {message.sender.username == user?.username && (
             <button
               title="Delete message"
-              onClick={() => dispatch(deleteMessage(chatId, message.id))}
+              onClick={() =>
+                group
+                  ? dispatch(deleteGroupMessage(chatId, message.id))
+                  : dispatch(deleteMessage(chatId, message.id))
+              }
               className="transform transition-all ease-in-out duration-300 p-1 rounded-full hover:bg-[#242423] active:scale-95"
             >
               <PiTrash size={22} />

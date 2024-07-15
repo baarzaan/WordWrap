@@ -4,7 +4,6 @@ import PrivateRoutes from "./routes/PrivateRoutes";
 import { useDispatch } from "react-redux";
 import { useEffect } from "react";
 import { getUser } from "./redux/actions/authActions";
-import MainLayout from "./components/layout/MainLayout";
 import { getUsers } from "./redux/actions/usersActions";
 import { getChats } from "./redux/actions/chatActions";
 
@@ -27,9 +26,7 @@ function App() {
               path={route.path}
               element={
                 route.isPrivate ? (
-                  <MainLayout>
-                    <PrivateRoutes>{route.element}</PrivateRoutes>
-                  </MainLayout>
+                  <PrivateRoutes>{route.element}</PrivateRoutes>
                 ) : (
                   route.element
                 )

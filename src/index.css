@@ -83,7 +83,7 @@ body {
 }
 
 ::-webkit-scrollbar {
-  width: 10px;
+  width: 5px;
 }
 
 ::-webkit-scrollbar-track {
@@ -100,4 +100,43 @@ div:hover::-webkit-scrollbar-thumb {
 
 ::-webkit-scrollbar-thumb:hover {
   background: black;
+}
+
+.search {
+  display: none;
+}
+
+@media (max-width: 970px) {
+  .main__layout {
+    display: flex;
+  }
+
+  .sidebar {
+    flex: 1;
+  }
+
+  .main {
+    flex: 1;
+  }
+}
+
+@media (max-width: 740px) {
+  .sidebar {
+    width: 100%;
+    padding: 2px;
+  }
+
+  .main {
+    display: none;
+  }
+}
+
+@media (max-width: 380px){
+  .search__input {
+    display: none;
+  }
+
+  .search {
+    display: flex;
+  }
 }

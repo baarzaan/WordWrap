@@ -8,7 +8,6 @@ import {
   removeFriend,
   toggleSendFriendRequest,
 } from "@/redux/actions/friendsActions";
-import { rejectFriendRequestReducer } from "@/redux/reducers/friendsReducers";
 import { truncateText } from "@/utils/truncateText";
 
 const AddFriend = () => {
@@ -45,6 +44,13 @@ const AddFriend = () => {
     searchUser();
   }, [searchUser]);
 
+  // Helper function to check if a user is a friend
+  const isFriend = (filteredUser) => {
+    return friends.some(
+      (friend) => friend.friendData.email === filteredUser.email
+    );
+  };
+
   return (
     <div className="w-full h-[150px] overflow-y-auto p-2 bg-[#424242] text-white rounded-lg flex flex-col justify-start items-start gap-3">
       <div className="flex w-full border-b border-b-[#707070] py-2">
@@ -77,38 +83,37 @@ const AddFriend = () => {
                     <strong>{truncateText(filteredUser.username, 10)}</strong>
                   </div>
 
-                  {filteredUser.email != user?.email && (
+                  {filteredUser.email !== user?.email && (
                     <>
-                      {friends.map((friend) => (
-                        <>
-                          {friend.friendData.email == filteredUser.email &&
-                          friend.requestStatus.isAccepted ? (
-                            <button
-                              title="Remove friend"
-                              onClick={() => {
-                                dispatch(removeFriend(user, filteredUser));
-                                alert("Friend removed successfully!");
-                              }}
-                              className="bg-[#242423] rounded-full transform transition-all ease-in-out duration-300 hover:bg-[#242423]/75 active:scale-95"
-                            >
-                              <IoIosClose size={24} />
-                            </button>
-                          ) : (
-                            <button
-                              title="Add friend"
-                              onClick={() => {
-                                dispatch(
-                                  toggleSendFriendRequest(user, filteredUser)
-                                );
-                                alert(success);
-                              }}
-                              className="bg-[#242423] rounded-full transform transition-all ease-in-out duration-300 hover:bg-[#242423]/75 active:scale-95"
-                            >
-                              <IoIosAdd size={24} />
-                            </button>
-                          )}
-                        </>
-                      ))}
+                      {isFriend(filteredUser) ? (
+                        <button
+                          title="Remove friend"
+                          onClick={() => {
+                            const friend = friends.find(
+                              (friend) =>
+                                friend.friendData.email === filteredUser.email
+                            );
+                            dispatch(removeFriend(user, friend.friendData));
+                            alert("Friend removed successfully!");
+                          }}
+                          className="bg-[#242423] rounded-full transform transition-all ease-in-out duration-300 hover:bg-[#242423]/75 active:scale-95"
+                        >
+                          <IoIosClose size={24} />
+                        </button>
+                      ) : (
+                        <button
+                          title="Add friend"
+                          onClick={() => {
+                            dispatch(
+                              toggleSendFriendRequest(user, filteredUser)
+                            );
+                            alert(success);
+                          }}
+                          className="bg-[#242423] rounded-full transform transition-all ease-in-out duration-300 hover:bg-[#242423]/75 active:scale-95"
+                        >
+                          <IoIosAdd size={24} />
+                        </button>
+                      )}
                     </>
                   )}
                 </div>

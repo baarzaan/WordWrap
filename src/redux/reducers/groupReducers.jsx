@@ -2,6 +2,9 @@ import {
   CREATE_GROUP_FAIL,
   CREATE_GROUP_REQUEST,
   CREATE_GROUP_SUCCESS,
+  DELETE_GROUP_MESSAGE_FAIL,
+  DELETE_GROUP_MESSAGE_REQUEST,
+  DELETE_GROUP_MESSAGE_SUCCESS,
   GET_GROUP_MESSAGES_FAIL,
   GET_GROUP_MESSAGES_REQUEST,
   GET_GROUP_MESSAGES_SUCCESS,
@@ -11,6 +14,9 @@ import {
   SEND_MESSAGE_TO_GROUP_FAIL,
   SEND_MESSAGE_TO_GROUP_REQUEST,
   SEND_MESSAGE_TO_GROUP_SUCCESS,
+  UPDATE_GROUP_MESSAGE_STATUS_FAIL,
+  UPDATE_GROUP_MESSAGE_STATUS_REQUEST,
+  UPDATE_GROUP_MESSAGE_STATUS_SUCCESS,
 } from "../constants/groupConstants";
 
 const initialState = {
@@ -119,6 +125,68 @@ export const getGroupMessagesReducer = (state = initialState, action) => {
       };
 
     case GET_GROUP_MESSAGES_FAIL:
+      return {
+        ...state,
+        loading: false,
+        error: action.payload,
+      };
+
+    default:
+      return { ...state };
+  }
+};
+
+export const updateGroupMessageStatusReducer = (
+  state = initialState,
+  action
+) => {
+  switch (action.type) {
+    case UPDATE_GROUP_MESSAGE_STATUS_REQUEST:
+      return {
+        ...state,
+        loading: true,
+      };
+
+    case UPDATE_GROUP_MESSAGE_STATUS_SUCCESS:
+      return {
+        ...state,
+        loading: false,
+      };
+
+    case UPDATE_GROUP_MESSAGE_STATUS_FAIL:
+      return {
+        ...state,
+        loading: false,
+        error: action.payload,
+      };
+
+    default:
+      return { ...state };
+  }
+};
+
+export const deleteGroupMessageReducer = (state = initialState, action) => {
+  switch (action.type) {
+    case DELETE_GROUP_MESSAGE_REQUEST:
+      return {
+        ...state,
+        loading: true,
+      };
+
+    case DELETE_GROUP_MESSAGE_SUCCESS:
+      const { groupId, messageId } = action.payload;
+      return {
+        ...state,
+        loading: false,
+        messages: {
+          ...state.messages,
+          [groupId]: state.messages[groupId].filter(
+            (message) => message.id !== messageId
+          ),
+        },
+      };
+
+    case DELETE_GROUP_MESSAGE_FAIL:
       return {
         ...state,
         loading: false,

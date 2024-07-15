@@ -30,26 +30,26 @@ export const toggleSendFriendRequest =
       // Authenticated user friends collection
       const authenticatedUserFriendsCollection = collection(
         db,
-        `users/${authenticatedUser.email}/friends/${userToFriend.email}`
+        `users/${authenticatedUser.email}/friends`
       );
 
       const authenticatedUserFriendsSnapshot = await getDocs(
         authenticatedUserFriendsCollection
       );
       const isFriend = authenticatedUserFriendsSnapshot.docs.find(
-        (doc) => doc.data().friendData.email == userToFriend.email
+        (doc) => doc.data().friendData.email === userToFriend.email
       );
 
       // User to be friend requests collection
       const userToFriendRequestsCollection = collection(
         db,
-        `users/${userToFriend.email}/requests/${authenticatedUser.email}`
+        `users/${userToFriend.email}/requests`
       );
       const userToFriendRequestsSnapshot = await getDocs(
         userToFriendRequestsCollection
       );
       const isRequested = userToFriendRequestsSnapshot.docs.find(
-        (doc) => doc.data().friendData.email == authenticatedUser.email
+        (doc) => doc.data().friendData.email === authenticatedUser.email
       );
 
       if (isFriend && isRequested) {
@@ -204,7 +204,7 @@ export const removeFriend =
         db,
         `users/${authenticatedUser.email}/friends/${friendId}`
       );
-      await deleteDoc(doc(authenticatedUserFriendsCollection));
+      await deleteDoc(doc(authenticatedUserFriendsCollection, friendId));
 
       const friendFriendsCollection = collection(
         db,
@@ -221,27 +221,9 @@ export const removeFriend =
 
       dispatch({
         type: REMOVE_FRIEND_SUCCESS,
-        payload: friend.friendData.email,
+        // payload: friend.friendData.email,
       });
     } catch (error) {
       dispatch({ type: REMOVE_FRIEND_FAIL, payload: error.message });
     }
   };
-
-/* const addChat = (currentUser, chatData, userToChat) => async (dispatch) => {
-  try {
-    const currentUserChatsCollection = collection(
-      db,
-      `chats/${currentUser.email}/chats/${userToChat.email}/chats`
-    );
-    await addDoc(currentUserChatsCollection, chatData);
-
-    const userToChatChatsCollection = collection(
-      db,
-      `chats/${userToChat.email}/chats/${currentUser.email}/chats`
-    );
-    await addDoc(userToChatChatsCollection, chatData);
-  } catch (error) {
-    console.error(error.message);
-  }
-}; */

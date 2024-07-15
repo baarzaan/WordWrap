@@ -1,10 +1,7 @@
 import React, { useState } from "react";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import { useDispatch } from "react-redux";
 import { logout } from "@/redux/actions/authActions";
 import { IoIosArrowBack } from "react-icons/io";
-import { Button } from "./ui/button";
 
 const UserDetails = ({ user }) => {
   const dispatch = useDispatch();
@@ -33,7 +30,7 @@ const UserDetails = ({ user }) => {
         </>
       ) : (
         <div className="w-full flex flex-col justify-start items-start gap-6 text-white">
-          <div className="flex justify-center items-center gap-2">
+          <div className="flex justify-start items-start pb-2 gap-2 border-b border-b-[#525151] w-full">
             <button
               title="Back"
               onClick={() => setShowUserInfo(false)}
@@ -44,38 +41,11 @@ const UserDetails = ({ user }) => {
             <strong>My info</strong>
           </div>
 
-          <div className="flex flex-col justify-center items-center gap-4 w-full">
-            <Input
-              type="text"
-              title="First Name"
-              placeholder="First Name"
-              defaultValue={user?.firstName}
-            />
-
-            <Input
-              type="text"
-              title="Last Name"
-              placeholder="Last Name"
-              defaultValue={user?.lastName}
-            />
-
-            <Input
-              type="text"
-              title="Username"
-              placeholder="Username"
-              defaultValue={user?.username}
-            />
-
-            <Input
-              type="email"
-              title="Email"
-              defaultValue={user?.email}
-              disabled
-            />
-
-            <Button className="w-full bg-[#242423]/50 transform transition-all ease-in-out duration-200 hover:bg-[#242423]/40 active:scale-95">
-              Save
-            </Button>
+          <div className="flex flex-col justify-start items-start gap-4 w-full">
+            <strong>First name: {user?.firstName}</strong>
+            <strong>Last name: {user?.lastName}</strong>
+            <strong>Username: {user?.username}</strong>
+            <strong>Email: {user?.email}</strong>
           </div>
         </div>
       )}

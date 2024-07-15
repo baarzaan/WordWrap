@@ -69,7 +69,10 @@ export const getUser = () => (dispatch) => {
               ...doc.data(),
             }));
             // console.log(userFriends)
-            dispatch({ type: GET_FRIENDS_SUCCESS, payload: userFriends });
+            dispatch({
+              type: GET_FRIENDS_SUCCESS,
+              payload: userFriends,
+            });
           }
         );
 
@@ -146,7 +149,9 @@ export const register = (userData) => async (dispatch) => {
 
     const usersCollection = collection(db, "users");
     const usersSnapshot = await getDocs(usersCollection);
-    const isUsernameExists = usersSnapshot.docs.find((doc) => doc.data().username == userData.username);
+    const isUsernameExists = usersSnapshot.docs.find(
+      (doc) => doc.data().username == userData.username
+    );
 
     if (!userSnapshot.exists() && !isUsernameExists) {
       await createUserWithEmailAndPassword(

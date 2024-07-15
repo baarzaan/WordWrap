@@ -165,7 +165,7 @@ export const rejectFriendRequestReducer = (state = initialState, action) => {
   }
 };
 
-export const removeFriendReducers = (state = initialState, action) => {
+export const removeFriendReducer = (state = initialState, action) => {
   switch (action.type) {
     case REMOVE_FRIEND_REQUEST:
       return {
@@ -177,7 +177,7 @@ export const removeFriendReducers = (state = initialState, action) => {
       return {
         ...state,
         loading: false,
-        friends: state.friends.filter((friend) => friend.friendData.email != action.payload),
+        // friends: state.friends.filter((friend) => friend.friendData.email != action.payload),
       };
 
     case REMOVE_FRIEND_FAIL:
