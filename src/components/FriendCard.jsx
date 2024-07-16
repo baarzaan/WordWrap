@@ -49,34 +49,41 @@ const FriendCard = ({ friend }) => {
 
       <div className="flex flex-col justify-start items-start">
         <strong>{friend.username}</strong>
-        {messages.slice(0, 1).map((message) => (
-          <div
-            key={message.id}
-            className="flex justify-center items-center gap-1.5"
-          >
-            <div className={`font-semibold`}>
-              <div className="">
-                {message.sender.username === user?.username ? (
-                  <p>You: {truncateText(message.message, 10)}</p>
-                ) : (
+
+        {messages.length == 0 ? (
+          <strong>Send first message</strong>
+        ) : (
+          <>
+            {messages.slice(0, 1).map((message) => (
+              <div
+                key={message.id}
+                className="flex justify-center items-center gap-1.5"
+              >
+                <div className="">
                   <div className="">
-                    {message.isRead ? (
-                      <p>{truncateText(message.message, 10)}</p>
+                    {message.sender.username === user?.username ? (
+                      <strong>You: {truncateText(message.message, 10)}</strong>
                     ) : (
-                      <p className="text-[#4450B5]">New chat</p>
+                      <div className="">
+                        {message.isRead ? (
+                          <strong>{truncateText(message.message, 10)}</strong>
+                        ) : (
+                          <strong className="text-[#4450B5]">New chat</strong>
+                        )}
+                      </div>
                     )}
                   </div>
-                )}
+                </div>
+                <p className="text-[#C1C1C1]">·</p>
+                <p className="text-[#C1C1C1]">
+                  <ReactTimeago
+                    date={new Date(message.createdAt?.toDate().toUTCString())}
+                  />
+                </p>
               </div>
-            </div>
-            <p className="text-[#C1C1C1]">·</p>
-            <p className="text-[#C1C1C1]">
-              <ReactTimeago
-                date={new Date(message.createdAt?.toDate().toUTCString())}
-              />
-            </p>
-          </div>
-        ))}
+            ))}
+          </>
+        )}
 
         {loading && <>Loading...</>}
       </div>

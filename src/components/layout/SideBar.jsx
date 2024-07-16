@@ -36,11 +36,12 @@ const SideBar = () => {
   const searchFriend = useCallback(() => {
     try {
       startTransition(() => {
-        const filteredFriends = friends.filter((friend) =>
-          friend.requestStatus.isAccepted &&
-          friend.friendData.username
-            .toLowerCase()
-            .includes(search.toLocaleLowerCase())
+        const filteredFriends = friends.filter(
+          (friend) =>
+            friend.requestStatus.isAccepted &&
+            friend.friendData.username
+              .toLowerCase()
+              .includes(search.toLocaleLowerCase())
         );
         setFilteredFriends(filteredFriends);
 
@@ -52,7 +53,7 @@ const SideBar = () => {
     } catch (error) {
       console.error(error.message);
     }
-  }, [search, friends]);
+  }, [search, friends, groups]);
 
   useEffect(() => {
     searchFriend();
@@ -119,13 +120,13 @@ const SideBar = () => {
               <div className="flex justify-center items-center gap-3 pr-1">
                 <Popover>
                   <PopoverTrigger asChild>
-                    <Button
-                      title="Add friend"
-                      className="relative bg-[#424242] p-1 w-10 h-10 flex justify-center items-center rounded-full transform transition-all ease-in-out duration-200 hover:opacity-80 active:scale-95"
-                    >
-                      <AiOutlineUserAdd size={28} />
+                    <Button className="relative bg-[#424242] p-1 w-10 h-10 flex justify-center items-center rounded-full transform transition-all ease-in-out duration-200 hover:opacity-80 active:scale-95">
+                      <AiOutlineUserAdd title="Add friend" size={28} />
 
-                      <div className="absolute -top-4 left-0 bg-red-600 text-white w-5 h-5 flex justify-center items-center rounded-full">
+                      <div
+                        title={`${requests.length} requests`}
+                        className="absolute -top-4 left-0 bg-red-600 text-white w-5 h-5 flex justify-center items-center rounded-full"
+                      >
                         <p>{requests.length}</p>
                       </div>
                     </Button>

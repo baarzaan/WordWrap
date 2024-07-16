@@ -200,11 +200,12 @@ export const removeFriend =
     dispatch({ type: REMOVE_FRIEND_REQUEST });
 
     try {
-      const authenticatedUserFriendsCollection = collection(
+      const authenticatedUserFriendsDoc = doc(
         db,
-        `users/${authenticatedUser.email}/friends/${friendId}`
+        `users/${authenticatedUser.email}/friends`,
+        friendId
       );
-      await deleteDoc(doc(authenticatedUserFriendsCollection, friendId));
+      await deleteDoc(authenticatedUserFriendsDoc);
 
       const friendFriendsCollection = collection(
         db,
@@ -212,7 +213,7 @@ export const removeFriend =
       );
       const friendFriendsSnapshot = await getDocs(friendFriendsCollection);
       const isFriend = friendFriendsSnapshot.docs.find(
-        (doc) => doc.data.friendData.email == authenticatedUser.email
+        (doc) => doc.data().friendData.email === authenticatedUser.email
       );
 
       if (isFriend) {
@@ -221,9 +222,10 @@ export const removeFriend =
 
       dispatch({
         type: REMOVE_FRIEND_SUCCESS,
-        // payload: friend.friendData.email,
+        payload: friend.friendData.email,
       });
     } catch (error) {
       dispatch({ type: REMOVE_FRIEND_FAIL, payload: error.message });
+      console.error(error.message);
     }
   };

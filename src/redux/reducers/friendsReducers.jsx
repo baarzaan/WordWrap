@@ -177,7 +177,7 @@ export const removeFriendReducer = (state = initialState, action) => {
       return {
         ...state,
         loading: false,
-        // friends: state.friends.filter((friend) => friend.friendData.email != action.payload),
+        friends: state.friends.filter((friend) => friend.friendData.email != action.payload),
       };
 
     case REMOVE_FRIEND_FAIL:

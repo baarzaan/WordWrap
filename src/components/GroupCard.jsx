@@ -23,7 +23,7 @@ const GroupCard = ({ group }) => {
   return (
     <Link
       to={`/c/${group.id}`}
-      className="flex justify-start items-center gap-2 w-full p-1 transform transition-all ease-in-out duration-200 hover:bg-[#414040] hover:rounded-lg active:scale-95"
+      className="flex justify-start items-center gap-2 w-full p-1 transform transition-all ease-in-out duration-200 hover:bg-[#414040] hover:rounded-lg active:scale-95 border-b border-b-[#414040] last:border-none"
     >
       <div className="flex flex-col justify-start items-start">
         <strong>{group.groupName}</strong>

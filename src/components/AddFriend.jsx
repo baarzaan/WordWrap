@@ -44,10 +44,17 @@ const AddFriend = () => {
     searchUser();
   }, [searchUser]);
 
-  // Helper function to check if a user is a friend
   const isFriend = (filteredUser) => {
     return friends.some(
       (friend) => friend.friendData.email === filteredUser.email
+    );
+  };
+
+  const isRequest = (filteredUser) => {
+    return requests.find(
+      (request) =>
+        request.friendData.email == filteredUser.email &&
+        request.requestStatus.isPending
     );
   };
 
@@ -66,11 +73,11 @@ const AddFriend = () => {
           {isPending ? (
             <>Loading...</>
           ) : (
-            <div className="flex flex-col justify-center items-center gap-4 w-full border-b border-b-[#707070] pb-1.5 last:border-none">
+            <div className="flex flex-col justify-center items-center gap-4 w-full">
               {filteredUsers.map((filteredUser) => (
                 <div
                   key={filteredUser.id}
-                  className="flex justify-between items-center w-full px-0.5"
+                  className="flex justify-between items-center w-full px-0.5 border-b border-b-[#707070] pb-1 last:border-none"
                 >
                   <div className="flex justify-center items-center gap-1">
                     <img
@@ -93,7 +100,7 @@ const AddFriend = () => {
                               (friend) =>
                                 friend.friendData.email === filteredUser.email
                             );
-                            dispatch(removeFriend(user, friend.friendData));
+                            dispatch(removeFriend(user, friend, friend.id));
                             alert("Friend removed successfully!");
                           }}
                           className="bg-[#242423] rounded-full transform transition-all ease-in-out duration-300 hover:bg-[#242423]/75 active:scale-95"
@@ -101,18 +108,40 @@ const AddFriend = () => {
                           <IoIosClose size={24} />
                         </button>
                       ) : (
-                        <button
-                          title="Add friend"
-                          onClick={() => {
-                            dispatch(
-                              toggleSendFriendRequest(user, filteredUser)
-                            );
-                            alert(success);
-                          }}
-                          className="bg-[#242423] rounded-full transform transition-all ease-in-out duration-300 hover:bg-[#242423]/75 active:scale-95"
-                        >
-                          <IoIosAdd size={24} />
-                        </button>
+                        <>
+                          {isRequest(filteredUser) ? (
+                            <button
+                              title="Reject friend request"
+                              onClick={() => {
+                                const request = requests.find(
+                                  (request) =>
+                                    request.friendData.email ==
+                                    filteredUser.email
+                                );
+                                dispatch(
+                                  rejectFriendRequest(user, request, request.id)
+                                );
+                                alert(success);
+                              }}
+                              className="bg-[#242423] rounded-full transform transition-all ease-in-out duration-300 hover:bg-[#242423]/75 active:scale-95"
+                            >
+                              <IoIosClose size={24} />
+                            </button>
+                          ) : (
+                            <button
+                              title="Add friend"
+                              onClick={() => {
+                                dispatch(
+                                  toggleSendFriendRequest(user, filteredUser)
+                                );
+                                alert(success);
+                              }}
+                              className="bg-[#242423] rounded-full transform transition-all ease-in-out duration-300 hover:bg-[#242423]/75 active:scale-95"
+                            >
+                              <IoIosAdd size={24} />
+                            </button>
+                          )}
+                        </>
                       )}
                     </>
                   )}
