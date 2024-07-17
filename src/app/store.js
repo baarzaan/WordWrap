@@ -4,7 +4,7 @@ import { getUserReducer, loginReducer, logoutReducer, registerReducer, resetPass
 import { getUsersReducer } from "@/redux/reducers/usersReducers";
 import { acceptFriendRequestReducer, toggleSendFriendRequestReducer, getFrinedRequestsReducer, getFrinedsReducer, removeFriendReducer } from "@/redux/reducers/friendsReducers";
 import { createChatReducer, deleteMessageReducer, getChatIdReducer, getChatsReducer, getMessagesReducer, sendChatReducer, sendMessageReducer } from "@/redux/reducers/chatReducer";
-import { createGroupReducer, deleteGroupMessageReducer, getGroupMessagesReducer, getGroupsReducer, sendMessageToGroupReducer, updateGroupMessageStatusReducer } from "@/redux/reducers/groupReducers";
+import { changeGroupNameReducer, createGroupReducer, deleteGroupMessageReducer, getGroupMessagesReducer, getGroupsReducer, sendMessageToGroupReducer, updateGroupMessageStatusReducer } from "@/redux/reducers/groupReducers";
 
 const rootReducers = combineReducers({
     user: getUserReducer,
@@ -31,6 +31,7 @@ const rootReducers = combineReducers({
     groupMessages: getGroupMessagesReducer,
     updateGroupMessageStatusReducer,
     deleteGroupMessageReducer,
+    changeGroupNameReducer,
 });
 
 const store = createStore(rootReducers, applyMiddleware(thunk))

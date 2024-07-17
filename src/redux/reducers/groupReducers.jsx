@@ -1,4 +1,7 @@
 import {
+  CHANGE_GROUP_NAME_FAIL,
+  CHANGE_GROUP_NAME_REQUEST,
+  CHANGE_GROUP_NAME_SUCCESS,
   CREATE_GROUP_FAIL,
   CREATE_GROUP_REQUEST,
   CREATE_GROUP_SUCCESS,
@@ -187,6 +190,33 @@ export const deleteGroupMessageReducer = (state = initialState, action) => {
       };
 
     case DELETE_GROUP_MESSAGE_FAIL:
+      return {
+        ...state,
+        loading: false,
+        error: action.payload,
+      };
+
+    default:
+      return { ...state };
+  }
+};
+
+export const changeGroupNameReducer = (state = initialState, action) => {
+  switch (action.type) {
+    case CHANGE_GROUP_NAME_REQUEST:
+      return {
+        ...state,
+        loading: true,
+      };
+
+    case CHANGE_GROUP_NAME_SUCCESS:
+      return {
+        ...state,
+        loading: false,
+        group: [...state.groups, action.payload],
+      };
+
+    case CHANGE_GROUP_NAME_FAIL:
       return {
         ...state,
         loading: false,

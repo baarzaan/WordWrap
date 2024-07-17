@@ -8,9 +8,13 @@ import {
   onSnapshot,
   orderBy,
   query,
+  updateDoc,
   where,
 } from "firebase/firestore";
 import {
+  CHANGE_GROUP_NAME_FAIL,
+  CHANGE_GROUP_NAME_REQUEST,
+  CHANGE_GROUP_NAME_SUCCESS,
   CREATE_GROUP_FAIL,
   CREATE_GROUP_REQUEST,
   CREATE_GROUP_SUCCESS,
@@ -83,9 +87,9 @@ export const sendMessageToGroup =
       const messageData = {
         sender,
         receivers,
+        seenBy: [],
         message,
         createdAt: new Date(),
-        whoRead: [],
       };
 
       const messagesCollcetion = collection(db, `groups/${messageId}/messages`);
@@ -122,11 +126,11 @@ export const getGroupMessages = (messageId) => async (dispatch) => {
 };
 
 export const updateGroupMessageStatus =
-  (messageId, currentUser) => async (dispatch) => {
+  (messageId, currentUserUsername) => async (dispatch) => {
     dispatch({ type: UPDATE_GROUP_MESSAGE_STATUS_REQUEST });
 
     try {
-      if (messageId && currentUser.username) {
+      if (messageId && currentUserUsername) {
         const messagesCollection = collection(
           db,
           `groups/${messageId}/messages`
@@ -134,12 +138,15 @@ export const updateGroupMessageStatus =
         const messagesSnapshot = await getDocs(messagesCollection);
         const updatePromises = messagesSnapshot.docs.map((doc) => {
           const message = doc.data();
+          // console.log("Check message: ", message);
+
           if (
-            message.receivers == [currentUser.username] &&
-            whoRead != [currentUser.username]
+            message.receivers.includes(currentUserUsername) &&
+            (!message.seenBy || !message.seenBy.includes(currentUserUsername))
           ) {
+            // console.log("Seen message by: ", message);
             return updateDoc(doc.ref, {
-              whoRead: arrayUnion(currentUser.username),
+              seenBy: arrayUnion(currentUserUsername),
             });
           }
           return null;
@@ -172,5 +179,20 @@ export const deleteGroupMessage = (groupId, messageId) => async (dispatch) => {
     });
   } catch (error) {
     dispatch({ type: DELETE_GROUP_MESSAGE_FAIL, payload: error.message });
+  }
+};
+
+export const changeGroupName = (group) => async (dispatch) => {
+  dispatch({ type: CHANGE_GROUP_NAME_REQUEST });
+
+  try {
+    const groupDoc = doc(db, "groups", group.id);
+    await updateDoc(groupDoc, {
+      groupName: group.groupName,
+    });
+
+    dispatch({ type: CHANGE_GROUP_NAME_SUCCESS, payload: group });
+  } catch (error) {
+    dispatch({ type: CHANGE_GROUP_NAME_FAIL, payload: error.message });
   }
 };

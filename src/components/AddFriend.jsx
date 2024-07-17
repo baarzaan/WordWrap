@@ -46,15 +46,17 @@ const AddFriend = () => {
 
   const isFriend = (filteredUser) => {
     return friends.some(
-      (friend) => friend.friendData.email === filteredUser.email
+      (friend) =>
+        friend.friendData.email === filteredUser.email &&
+        friend.requestStatus.isAccepted
     );
   };
 
-  const isRequest = (filteredUser) => {
-    return requests.find(
-      (request) =>
-        request.friendData.email == filteredUser.email &&
-        request.requestStatus.isPending
+  const isSendFriendRequest = (filteredUser) => {
+    return friends.find(
+      (friend) =>
+        friend.friendData.email == filteredUser.email &&
+        friend.requestStatus.isPending
     );
   };
 
@@ -109,17 +111,12 @@ const AddFriend = () => {
                         </button>
                       ) : (
                         <>
-                          {isRequest(filteredUser) ? (
+                          {isSendFriendRequest(filteredUser) ? (
                             <button
                               title="Reject friend request"
                               onClick={() => {
-                                const request = requests.find(
-                                  (request) =>
-                                    request.friendData.email ==
-                                    filteredUser.email
-                                );
                                 dispatch(
-                                  rejectFriendRequest(user, request, request.id)
+                                  toggleSendFriendRequest(user, filteredUser)
                                 );
                                 alert(success);
                               }}

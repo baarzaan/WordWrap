@@ -8,11 +8,27 @@ import ReactTimeago from "react-timeago";
 const MessageCard = ({ message, chatId, group }) => {
   const dispatch = useDispatch();
   const user = useSelector((state) => state.user.user);
+  const groups = useSelector((state) => state.getGroups.groups);
+  const groupId = groups.find((group) => group.id == chatId);
 
   return (
     <div
       title={
-        message.sender.email == user?.email ? null : message.isRead && "Seen"
+        groupId
+          ? `${
+              message.seenBy.length == 0 ||
+              (message.seenBy.length != message.receivers.length &&
+                message.seenBy.includes(user?.username))
+                ? ""
+                : `${
+                    message.seenBy.length === message.receivers.length
+                      ? "Seen by all"
+                      : `Seen by ${message.seenBy}`
+                  }`
+            }`
+          : message.receiver == user?.username
+          ? null
+          : message.isRead && "Seen"
       }
       className="flex gap-2 p-2 w-[300px] max-w-lg bg-[#2a2a2a] rounded-lg"
     >

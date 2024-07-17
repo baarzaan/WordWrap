@@ -1,5 +1,11 @@
+import React, { useEffect, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { useNavigate, useParams } from "react-router-dom";
+import { IoIosArrowBack, IoIosInformationCircleOutline } from "react-icons/io";
+import ChatSheet from "@/components/ChatSheet";
 import SideBar from "@/components/layout/SideBar";
 import MessageCard from "@/components/MessageCard";
+import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import {
   sendMessage,
   getMessages,
@@ -10,10 +16,6 @@ import {
   sendMessageToGroup,
   updateGroupMessageStatus,
 } from "@/redux/actions/groupActions";
-import React, { useEffect, useState } from "react";
-import { IoIosArrowBack, IoIosInformationCircleOutline } from "react-icons/io";
-import { useDispatch, useSelector } from "react-redux";
-import { useNavigate, useParams } from "react-router-dom";
 
 const ChatScreen = () => {
   const dispatch = useDispatch();
@@ -64,9 +66,9 @@ const ChatScreen = () => {
     getChat();
 
     if (foundChat && user) {
-      dispatch(updateMessageStatus(chatId, user.email));
+      dispatch(updateMessageStatus(chatId, user.username));
     } else if (foundGroup && user) {
-      dispatch(updateGroupMessageStatus(chatId, user));
+      dispatch(updateGroupMessageStatus(chatId, user.username));
     }
   }, [chats, chatId, friends, user, groups, users]);
 
@@ -166,12 +168,22 @@ const ChatScreen = () => {
                     </div>
 
                     <div>
-                      <button
-                        title="Conversation information"
-                        className="transform transition-all easy-in-out duration-200 active:scale-95"
-                      >
-                        <IoIosInformationCircleOutline size={25} />
-                      </button>
+                      <Sheet>
+                        <SheetTrigger asChild>
+                          <button
+                            title="Conversation information"
+                            className="transform transition-all easy-in-out duration-200 active:scale-95"
+                          >
+                            <IoIosInformationCircleOutline size={25} />
+                          </button>
+                        </SheetTrigger>
+                        <SheetContent>
+                          <ChatSheet
+                            participants={participants}
+                            group={group}
+                          />
+                        </SheetContent>
+                      </Sheet>
                     </div>
                   </header>
 
@@ -195,7 +207,11 @@ const ChatScreen = () => {
                           />
                         ))}
 
-                    {loading && <div className="flex justify-center items-center h-full mx-auto">Loading...</div>}
+                    {loading && (
+                      <div className="flex justify-center items-center h-full mx-auto">
+                        Loading...
+                      </div>
+                    )}
                     {error && <p className="text-red-600">{error}</p>}
                   </div>
 
@@ -217,7 +233,7 @@ const ChatScreen = () => {
                               chatId,
                               user,
                               participants.map(
-                                (participant) => participant.friendData
+                                (participant) => participant.friendData.username
                               ),
                               message
                             )
@@ -232,7 +248,7 @@ const ChatScreen = () => {
                                   (participant) =>
                                     participant.username != user.username
                                 )
-                                .map((participant) => participant),
+                                .map((participant) => participant.username),
                               message
                             )
                           );

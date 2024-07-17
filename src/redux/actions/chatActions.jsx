@@ -155,16 +155,18 @@ export const deleteMessage = (chatId, messageId) => async (dispatch) => {
 };
 
 export const updateMessageStatus =
-  (chatId, currentUserEmail) => async (dispatch) => {
+  (chatId, currentUserUsername) => async (dispatch) => {
     dispatch({ type: UPDATE_MESSAGE_STATUS_REQUEST });
 
     try {
-      if (chatId && currentUserEmail) {
+      if (chatId && currentUserUsername) {
         const messagesCollection = collection(db, `chats/${chatId}/messages`);
         const messagesSnapshot = await getDocs(messagesCollection);
         const updatePromises = messagesSnapshot.docs.map((doc) => {
           const message = doc.data();
-          if (message.receiver.email == currentUserEmail && !message.isRead) {
+          // console.log("Checking message:", message);
+          if (message.receiver == currentUserUsername && !message.isRead) {
+            // console.log("Updating message:", message);
             return updateDoc(doc.ref, { isRead: true });
           }
           return null;
