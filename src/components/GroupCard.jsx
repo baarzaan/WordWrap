@@ -41,10 +41,18 @@ const GroupCard = ({ group }) => {
                     {message.sender.username === user?.username ? (
                       <strong>You: {truncateText(message.message, 10)}</strong>
                     ) : (
-                      <strong>
-                        {message.sender.username}:{" "}
-                        {truncateText(message.message, 10)}
-                      </strong>
+                      <>
+                        {message.seenBy.find(
+                          (username) => username === user?.username
+                        ) ? (
+                          <strong>
+                            {message.sender.username}:{" "}
+                            {truncateText(message.message, 10)}
+                          </strong>
+                        ) : (
+                          <strong className="text-[#4450B5]">New message</strong>
+                        )}
+                      </>
                     )}
                   </div>
                 </div>

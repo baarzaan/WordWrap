@@ -15,18 +15,15 @@ const MessageCard = ({ message, chatId, group }) => {
     <div
       title={
         groupId
-          ? `${
-              message.seenBy.length == 0 ||
-              (message.seenBy.length != message.receivers.length &&
-                message.seenBy.includes(user?.username))
-                ? ""
-                : `${
-                    message.seenBy.length === message.receivers.length
-                      ? "Seen by all"
-                      : `Seen by ${message.seenBy}`
-                  }`
-            }`
-          : message.receiver == user?.username
+          ? message.seenBy.length === 0 ||
+            message.seenBy.every((username) => username === user?.username)
+            ? ""
+            : message.seenBy.length === message.receivers.length
+            ? "Seen by all"
+            : `Seen by ${message.seenBy
+                .filter((username) => username !== user?.username)
+                .join(", ")}`
+          : message.receiver === user?.username
           ? null
           : message.isRead && "Seen"
       }

@@ -36,12 +36,10 @@ const SideBar = () => {
   const searchFriend = useCallback(() => {
     try {
       startTransition(() => {
-        const filteredFriends = friends.filter(
-          (friend) =>
-            friend.requestStatus.isAccepted &&
-            friend.friendData.username
-              .toLowerCase()
-              .includes(search.toLocaleLowerCase())
+        const filteredFriends = friends.filter((friend) =>
+          friend.friendData.username
+            .toLowerCase()
+            .includes(search.toLocaleLowerCase())
         );
         setFilteredFriends(filteredFriends);
 
@@ -156,7 +154,9 @@ const SideBar = () => {
               <>Loading...</>
             ) : (
               <div className="flex flex-col justify-start items-start gap-4 w-full">
-                <h3 className="text-xl font-bold pb-2">Friends</h3>
+                <h3 className="text-xl font-bold pb-2">
+                  Friends ({filteredFriends.length})
+                </h3>
                 {filteredFriends.length == 0 ? (
                   <strong>You don't have any friends yet!</strong>
                 ) : (
@@ -167,16 +167,19 @@ const SideBar = () => {
                           key={friend.id}
                           className="w-full border-b border-b-[#404040] pb-1"
                         >
-                          {friend.requestStatus.isPending ? null : (
-                            <FriendCard friend={friend.friendData} />
-                          )}
+                          <FriendCard
+                            friend={friend.friendData}
+                            requestStatus={friend.requestStatus}
+                          />
                         </div>
                       </>
                     ))}
                   </>
                 )}
 
-                <h3 className="text-xl font-bold py-2">Groups</h3>
+                <h3 className="text-xl font-bold py-2">
+                  Groups ({filteredGroups.length})
+                </h3>
                 {filteredGroups.length == 0 ? (
                   <strong>You don't have any groups yet!</strong>
                 ) : (

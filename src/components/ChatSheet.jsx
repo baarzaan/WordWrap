@@ -78,7 +78,9 @@ const ChatSheet = ({ participants, group }) => {
 
         <div className="flex flex-col justify-start items-start gap-2 w-full overflow-y-clip">
           <div className="flex justify-between items-center w-full">
-            <SheetTitle>Members</SheetTitle>
+            <SheetTitle>
+              Members {group && <>({group.participants.length})</>}
+            </SheetTitle>
 
             {group && (
               <button className="text-[#e4e4e5] transform transition-all ease-in-out duration-300 hover:text-[#969393] active:scale-95">
@@ -207,10 +209,12 @@ const ChatSheet = ({ participants, group }) => {
               dispatch(
                 leaveGroup(
                   group.id,
-                  group.participants.find(participant => participant == user?.username)
+                  group.participants.find(
+                    (participant) => participant == user?.username
+                  )
                 )
-              )
-              navigate("/")
+              );
+              navigate("/");
             }}
             className="flex justify-start items-start text-[#db3d3d] font-semibold transform transition-all duration-300 hover:text-[#c23030] active:scale-95 w-full"
           >

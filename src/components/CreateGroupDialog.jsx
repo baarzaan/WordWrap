@@ -23,35 +23,47 @@ const CreateGroupDialog = () => {
     control: (base, state) => ({
       ...base,
       background: "#212121",
-      // match with the menu
       borderColor: "#969393",
       borderRadius: "6px",
       padding: "3px",
-      // Removes weird border around container
       boxShadow: state.isFocused ? null : null,
       "&:hover": {
-        // Overwrittes the different states of border
         borderColor: "#969393",
         background: "#242423",
       },
     }),
     menu: (base) => ({
       ...base,
-      // override border radius to match the box
       borderRadius: 0,
       background: "#212121",
-      // kill the gap
       marginTop: 0,
     }),
     menuList: (base) => ({
       ...base,
-      // kill the white space on first and last option
       padding: 0,
     }),
   };
 
   const handleChangeFriends = (selectedFriends) => {
     setSelectedFriends(selectedFriends);
+  };
+
+  const getFriendOptions = () => {
+    return friends
+      .filter((friend) => friend.requestStatus.isAccepted)
+      .map((friend) => ({
+        value: friend.friendData.username,
+        label: (
+          <div className="flex justify-start items-center gap-1">
+            <img
+              src={friend.friendData.photoURL}
+              className="w-8 h-8 rounded-full object-cover"
+              alt={friend.friendData.username}
+            />
+            <strong>{friend.friendData.username}</strong>
+          </div>
+        ),
+      }));
   };
 
   return (
@@ -70,33 +82,16 @@ const CreateGroupDialog = () => {
         />
 
         <Select
-          className=""
           styles={customStyles}
           placeholder="Select your friends"
-          options={friends.map(
-            (friend) =>
-              friend.requestStatus.isAccepted && {
-                value: friend.friendData.username,
-                label: (
-                  <div className="flex justify-start items-center gap-1">
-                    <img
-                      src={friend.friendData.photoURL}
-                      className="w-8 h-8 rounded-full object-cover"
-                      alt=""
-                    />
-
-                    <strong className="">{friend.friendData.username}</strong>
-                  </div>
-                ),
-              }
-          )}
+          options={getFriendOptions()}
           isMulti
           onChange={handleChangeFriends}
         />
       </div>
       <DialogFooter>
         <Button
-          disabled={groupName.trim() == "" || selectedFriends.length == 0}
+          disabled={groupName.trim() === "" || selectedFriends.length === 0}
           onClick={() => {
             dispatch(
               createGroup(

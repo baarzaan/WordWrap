@@ -116,7 +116,7 @@ const AddFriend = () => {
                         <>
                           {isSendFriendRequest(filteredUser) ? (
                             <button
-                              title="Reject friend request"
+                              title="Remove send friend request"
                               onClick={() => {
                                 dispatch(
                                   toggleSendFriendRequest(user, filteredUser)

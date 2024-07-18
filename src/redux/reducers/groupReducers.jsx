@@ -246,9 +246,6 @@ export const removeMemberFromGroupReducer = (state = initialState, action) => {
       return {
         ...state,
         loading: false,
-        groups: state.groups.filter(
-          (group) => group.participants != action.payload
-        ),
       };
 
     case REMOVE_MEMBER_FROM_GROUP_FAIL:
@@ -275,9 +272,6 @@ export const leaveGroupReducer = (state = initialState, action) => {
       return {
         ...state,
         loading: false,
-        groups: state.groups.filter(
-          (group) => group.participants != action.payload
-        ),
       };
 
     case LEAVE_GROUP_FAIL:

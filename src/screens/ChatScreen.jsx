@@ -104,7 +104,7 @@ const ChatScreen = () => {
                   <header className="flex justify-between items-center w-full h-16 px-2 bg-[#242423] rounded-lg">
                     <div className="flex justify-center items-center gap-2">
                       <button
-                        title="Back"
+                        title="Close chat"
                         onClick={() => navigate("/")}
                         className="transform transition-all ease-in-out duration-200 hover:bg-[#404040] p-1 rounded-full active:scale-95"
                       >
@@ -138,7 +138,7 @@ const ChatScreen = () => {
                             </>
                           ) : (
                             <div className="flex justify-center items-center gap-2">
-                              {participants
+                              {participants.slice(0, 3)
                                 .filter(
                                   (participant) =>
                                     participant.username != user.username
@@ -227,7 +227,7 @@ const ChatScreen = () => {
 
                     <button
                       onClick={() => {
-                        if (chats.find((chat) => chat.id === chatId)) {
+                        if (foundChat) {
                           dispatch(
                             sendMessage(
                               chatId,
