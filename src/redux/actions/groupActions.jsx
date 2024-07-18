@@ -1,5 +1,6 @@
 import {
   addDoc,
+  arrayRemove,
   arrayUnion,
   collection,
   deleteDoc,
@@ -27,6 +28,12 @@ import {
   GET_GROUPS_FAIL,
   GET_GROUPS_REQUEST,
   GET_GROUPS_SUCCESS,
+  LEAVE_GROUP_FAIL,
+  LEAVE_GROUP_REQUEST,
+  LEAVE_GROUP_SUCCESS,
+  REMOVE_MEMBER_FROM_GROUP_FAIL,
+  REMOVE_MEMBER_FROM_GROUP_REQUEST,
+  REMOVE_MEMBER_FROM_GROUP_SUCCESS,
   SEND_MESSAGE_TO_GROUP_FAIL,
   SEND_MESSAGE_TO_GROUP_REQUEST,
   SEND_MESSAGE_TO_GROUP_SUCCESS,
@@ -194,5 +201,40 @@ export const changeGroupName = (group) => async (dispatch) => {
     dispatch({ type: CHANGE_GROUP_NAME_SUCCESS, payload: group });
   } catch (error) {
     dispatch({ type: CHANGE_GROUP_NAME_FAIL, payload: error.message });
+  }
+};
+
+export const removeMemberFromGroup =
+  (groupId, groupMember) => async (dispatch) => {
+    dispatch({ type: REMOVE_MEMBER_FROM_GROUP_REQUEST });
+
+    try {
+      const groupDoc = doc(db, "groups", groupId);
+      await updateDoc(groupDoc, {
+        participants: arrayRemove(groupMember),
+      });
+      dispatch({
+        type: REMOVE_MEMBER_FROM_GROUP_SUCCESS,
+        payload: groupMember,
+      });
+    } catch (error) {
+      dispatch({ type: REMOVE_MEMBER_FROM_GROUP_FAIL, payload: error.message });
+    }
+  };
+
+export const leaveGroup = (groupId, groupMember) => async (dispatch) => {
+  dispatch({ type: LEAVE_GROUP_REQUEST });
+
+  try {
+    const groupDoc = doc(db, "groups", groupId);
+    await updateDoc(groupDoc, {
+      participants: arrayRemove(groupMember),
+    });
+    dispatch({
+      type: LEAVE_GROUP_SUCCESS,
+      payload: groupMember,
+    });
+  } catch (error) {
+    dispatch({ type: LEAVE_GROUP_FAIL, payload: error.message });
   }
 };

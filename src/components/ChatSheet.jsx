@@ -16,8 +16,9 @@ import {
   PopoverTrigger,
 } from "@radix-ui/react-popover";
 import ChatSheetParticipant from "./ChatSheetParticipant";
-import { changeGroupName } from "@/redux/actions/groupActions";
+import { changeGroupName, leaveGroup } from "@/redux/actions/groupActions";
 import { removeFriend } from "@/redux/actions/friendsActions";
+import { useNavigate } from "react-router-dom";
 
 const ChatSheet = ({ participants, group }) => {
   const dispatch = useDispatch();
@@ -25,6 +26,7 @@ const ChatSheet = ({ participants, group }) => {
   const [showChangeGroupName, setShowChangeGroupName] = useState(false);
   const [groupName, setGroupName] = useState(group?.groupName);
   const loading = useSelector((state) => state.changeGroupNameReducer.loading);
+  const navigate = useNavigate();
 
   return (
     <>
@@ -80,7 +82,7 @@ const ChatSheet = ({ participants, group }) => {
 
             {group && (
               <button className="text-[#e4e4e5] transform transition-all ease-in-out duration-300 hover:text-[#969393] active:scale-95">
-                Add people
+                Add members
               </button>
             )}
           </div>
@@ -200,7 +202,18 @@ const ChatSheet = ({ participants, group }) => {
       </div>
       <SheetFooter className="w-full">
         {group && (
-          <button className="flex justify-start items-start text-[#db3d3d] font-semibold transform transition-all duration-300 hover:text-[#c23030] active:scale-95 w-full">
+          <button
+            onClick={() => {
+              dispatch(
+                leaveGroup(
+                  group.id,
+                  group.participants.find(participant => participant == user?.username)
+                )
+              )
+              navigate("/")
+            }}
+            className="flex justify-start items-start text-[#db3d3d] font-semibold transform transition-all duration-300 hover:text-[#c23030] active:scale-95 w-full"
+          >
             Leave group
           </button>
         )}

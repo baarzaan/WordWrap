@@ -189,7 +189,7 @@ const ChatScreen = () => {
 
                   {/* Chat Body */}
                   <div className="flex flex-col-reverse gap-3 overflow-y-auto h-[70%] w-full">
-                    {chats.find((chat) => chat.id === chatId)
+                    {foundChat
                       ? messages.map((message) => (
                           <MessageCard
                             key={message.id}

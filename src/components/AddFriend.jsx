@@ -60,6 +60,9 @@ const AddFriend = () => {
     );
   };
 
+  const isRequest = (filteredUser) =>
+    requests.some((request) => request.friendData.email == filteredUser.email);
+
   return (
     <div className="w-full h-[150px] overflow-y-auto p-2 bg-[#424242] text-white rounded-lg flex flex-col justify-start items-start gap-3">
       <div className="flex w-full border-b border-b-[#707070] py-2">
@@ -125,18 +128,70 @@ const AddFriend = () => {
                               <IoIosClose size={24} />
                             </button>
                           ) : (
-                            <button
-                              title="Add friend"
-                              onClick={() => {
-                                dispatch(
-                                  toggleSendFriendRequest(user, filteredUser)
-                                );
-                                alert(success);
-                              }}
-                              className="bg-[#242423] rounded-full transform transition-all ease-in-out duration-300 hover:bg-[#242423]/75 active:scale-95"
-                            >
-                              <IoIosAdd size={24} />
-                            </button>
+                            <>
+                              {isRequest(filteredUser) ? (
+                                <div className="flex justify-center items-center gap-1">
+                                  <button
+                                    title="Accept friend request"
+                                    onClick={() => {
+                                      const request = requests.find(
+                                        (request) =>
+                                          request.friendData.email ===
+                                          filteredUser.email
+                                      );
+                                      dispatch(
+                                        acceptFriendRequest(
+                                          user,
+                                          request,
+                                          request.id
+                                        )
+                                      );
+                                      alert(success);
+                                    }}
+                                    className="bg-[#242423] rounded-full transform transition-all ease-in-out duration-300 hover:bg-[#242423]/75 active:scale-95"
+                                  >
+                                    <IoIosCheckmark size={24} />
+                                  </button>
+
+                                  <button
+                                    title="Reject friend request"
+                                    onClick={() => {
+                                      const request = requests.find(
+                                        (request) =>
+                                          request.friendData.email ===
+                                          filteredUser.email
+                                      );
+                                      dispatch(
+                                        rejectFriendRequest(
+                                          user,
+                                          request,
+                                          request.id
+                                        )
+                                      );
+                                      alert(success);
+                                    }}
+                                    className="bg-[#242423] rounded-full transform transition-all ease-in-out duration-300 hover:bg-[#242423]/75 active:scale-95"
+                                  >
+                                    <IoIosClose size={24} />
+                                  </button>
+                                </div>
+                              ) : (
+                                <button
+                                  onClick={() => {
+                                    dispatch(
+                                      toggleSendFriendRequest(
+                                        user,
+                                        filteredUser
+                                      )
+                                    );
+                                    alert(success);
+                                  }}
+                                  className="bg-[#242423] rounded-full transform transition-all ease-in-out duration-300 hover:bg-[#242423]/75 active:scale-95"
+                                >
+                                  <IoIosAdd size={24} />
+                                </button>
+                              )}
+                            </>
                           )}
                         </>
                       )}
@@ -151,11 +206,11 @@ const AddFriend = () => {
         <div className="flex flex-col justify-start items-start gap-2 w-full">
           <strong>Friend Requests ({requests.length})</strong>
           {requests.length > 0 ? (
-            <div className="flex flex-col justify-center items-center border-b border-b-[#707070] last:border-none w-full">
+            <div className="flex flex-col gap-2 justify-center items-center w-full">
               {requests.map((request) => (
                 <div
                   key={request.id}
-                  className="flex justify-between items-center w-full px-0.5"
+                  className="flex justify-between items-center w-full px-0.5 py-1 border-b border-b-[#707070] last:border-none"
                 >
                   <div className="flex justify-center items-center gap-1">
                     <img

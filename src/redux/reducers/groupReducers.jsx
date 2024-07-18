@@ -14,6 +14,12 @@ import {
   GET_GROUPS_FAIL,
   GET_GROUPS_REQUEST,
   GET_GROUPS_SUCCESS,
+  LEAVE_GROUP_FAIL,
+  LEAVE_GROUP_REQUEST,
+  LEAVE_GROUP_SUCCESS,
+  REMOVE_MEMBER_FROM_GROUP_FAIL,
+  REMOVE_MEMBER_FROM_GROUP_REQUEST,
+  REMOVE_MEMBER_FROM_GROUP_SUCCESS,
   SEND_MESSAGE_TO_GROUP_FAIL,
   SEND_MESSAGE_TO_GROUP_REQUEST,
   SEND_MESSAGE_TO_GROUP_SUCCESS,
@@ -217,6 +223,64 @@ export const changeGroupNameReducer = (state = initialState, action) => {
       };
 
     case CHANGE_GROUP_NAME_FAIL:
+      return {
+        ...state,
+        loading: false,
+        error: action.payload,
+      };
+
+    default:
+      return { ...state };
+  }
+};
+
+export const removeMemberFromGroupReducer = (state = initialState, action) => {
+  switch (action.type) {
+    case REMOVE_MEMBER_FROM_GROUP_REQUEST:
+      return {
+        ...state,
+        loading: true,
+      };
+
+    case REMOVE_MEMBER_FROM_GROUP_SUCCESS:
+      return {
+        ...state,
+        loading: false,
+        groups: state.groups.filter(
+          (group) => group.participants != action.payload
+        ),
+      };
+
+    case REMOVE_MEMBER_FROM_GROUP_FAIL:
+      return {
+        ...state,
+        loading: false,
+        error: action.payload,
+      };
+
+    default:
+      return { ...state };
+  }
+};
+
+export const leaveGroupReducer = (state = initialState, action) => {
+  switch (action.type) {
+    case LEAVE_GROUP_REQUEST:
+      return {
+        ...state,
+        loading: true,
+      };
+
+    case LEAVE_GROUP_SUCCESS:
+      return {
+        ...state,
+        loading: false,
+        groups: state.groups.filter(
+          (group) => group.participants != action.payload
+        ),
+      };
+
+    case LEAVE_GROUP_FAIL:
       return {
         ...state,
         loading: false,
