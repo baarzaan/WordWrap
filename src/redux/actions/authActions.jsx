@@ -43,20 +43,29 @@ import {
 } from "../constants/friendsConstants";
 
 export const getUser = () => (dispatch) => {
+  console.log("Dispatching AUTH_GET_USER_REQUEST");
   dispatch({ type: AUTH_GET_USER_REQUEST });
-  dispatch({ type: GET_FRIENDS_REQUEST });
-  dispatch({ type: GET_FRIEND_REQUESTS_REQUEST });
 
   try {
     auth.onAuthStateChanged((currentUser) => {
       if (currentUser) {
         const userDoc = doc(db, "users", currentUser.email);
-        onSnapshot(userDoc, (snapshot) => {
-          currentUser = snapshot.data();
-          dispatch({ type: AUTH_GET_USER_SUCCESS, payload: currentUser });
-        });
 
-        // Get user friends
+        // Listen for user data changes
+        onSnapshot(
+          userDoc,
+          (snapshot) => {
+            const userData = snapshot.data();
+            console.log("Dispatching AUTH_GET_USER_SUCCESS", userData);
+            dispatch({ type: AUTH_GET_USER_SUCCESS, payload: userData });
+          },
+          (error) => {
+            console.error("Error in onSnapshot for user data:", error);
+            dispatch({ type: AUTH_GET_USER_FAIL, payload: error.message });
+          }
+        );
+
+        // Listen for user friends
         const userFriendsCollection = collection(
           db,
           `users/${currentUser.email}/friends`
@@ -68,15 +77,16 @@ export const getUser = () => (dispatch) => {
               id: doc.id,
               ...doc.data(),
             }));
-            // console.log(userFriends)
-            dispatch({
-              type: GET_FRIENDS_SUCCESS,
-              payload: userFriends,
-            });
+            console.log("Dispatching GET_FRIENDS_SUCCESS", userFriends);
+            dispatch({ type: GET_FRIENDS_SUCCESS, payload: userFriends });
+          },
+          (error) => {
+            console.error("Error in onSnapshot for user friends:", error);
+            dispatch({ type: GET_FRIENDS_FAIL, payload: error.message });
           }
         );
 
-        // Get user frined requests
+        // Listen for friend requests
         const userFriendRequestsCollection = collection(
           db,
           `users/${currentUser.email}/requests`
@@ -88,19 +98,35 @@ export const getUser = () => (dispatch) => {
               id: doc.id,
               ...doc.data(),
             }));
-            // console.log(userFriendRequests)
+            console.log(
+              "Dispatching GET_FRIEND_REQUESTS_SUCCESS",
+              userFriendRequests
+            );
             dispatch({
               type: GET_FRIEND_REQUESTS_SUCCESS,
               payload: userFriendRequests,
             });
+          },
+          (error) => {
+            console.error("Error in onSnapshot for friend requests:", error);
+            dispatch({
+              type: GET_FRIEND_REQUESTS_FAIL,
+              payload: error.message,
+            });
           }
         );
+      } else {
+        // Handle case where no user is authenticated
+        console.log("No user authenticated");
+        dispatch({
+          type: AUTH_GET_USER_FAIL,
+          payload: "No user authenticated",
+        });
       }
     });
   } catch (error) {
+    console.error("Error in getUser action creator:", error);
     dispatch({ type: AUTH_GET_USER_FAIL, payload: error.message });
-    dispatch({ type: GET_FRIENDS_FAIL, payload: error.message });
-    dispatch({ type: GET_FRIEND_REQUESTS_FAIL, payload: error.message });
   }
 };
 
@@ -215,7 +241,7 @@ export const logout = () => async (dispatch) => {
 
   try {
     await signOut(auth);
-    dispatch({ type: AUTH_LOGOUT_SUCCESS, payload: null });
+    dispatch({ type: AUTH_LOGOUT_SUCCESS });
   } catch (error) {
     dispatch({ type: AUTH_LOGOUT_FAIL, payload: error.message });
   }

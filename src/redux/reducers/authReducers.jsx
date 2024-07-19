@@ -26,12 +26,14 @@ const initialState = {
 export const getUserReducer = (state = initialState, action) => {
   switch (action.type) {
     case AUTH_GET_USER_REQUEST:
+      console.log('AUTH_GET_USER_REQUEST');
       return {
         ...state,
         loading: true,
       };
 
     case AUTH_GET_USER_SUCCESS:
+      console.log('AUTH_GET_USER_SUCCESS', action.payload);
       return {
         ...state,
         loading: false,
@@ -39,6 +41,7 @@ export const getUserReducer = (state = initialState, action) => {
       };
 
     case AUTH_GET_USER_FAIL:
+      console.log('AUTH_GET_USER_FAIL', action.payload);
       return {
         ...state,
         loading: false,
@@ -143,7 +146,7 @@ export const logoutReducer = (state = initialState, action) => {
       return {
         ...state,
         loading: false,
-        user: action.payload,
+        user: null,
       };
 
     case AUTH_LOGOUT_FAIL:
