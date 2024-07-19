@@ -10,8 +10,8 @@ const firebaseConfig = {
     projectId: "barzanchat-c26ea",
     storageBucket: "barzanchat-c26ea.appspot.com",
     messagingSenderId: "448542790741",
-    appId: "1:448542790741:web:431c934c651066fb0230dc",
-    measurementId: "G-EYMGLSEPKH"
+    appId: "1:448542790741:web:3c5be132ce7f8f310230dc",
+    measurementId: "G-0SEEJVKDDB"
 };
 
 // Initialize Firebase

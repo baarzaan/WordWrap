@@ -1,3 +1,4 @@
+import Logo from "../../assets/img/logo.png";
 import React, { useCallback, useEffect, useState, useTransition } from "react";
 import { AiOutlineUserAdd } from "react-icons/ai";
 import { FaRegPenToSquare } from "react-icons/fa6";
@@ -63,7 +64,7 @@ const SideBar = () => {
         <div className="sticky top-0 left-0 w-full h-screen overflow-y-clip bg-[#242423] flex flex-col justify-start items-start py-4 gap-5">
           <div className="flex flex-col justify-center items-center gap-6 w-full border-b border-b-[#2a2a2a]">
             <Link to="/" className="text-3xl font-bold">
-              LOGO
+              <img src={Logo} alt="Logo" className="h-[100px]" />
             </Link>
 
             <div className="flex justify-between items-center w-full pb-1 gap-2">
