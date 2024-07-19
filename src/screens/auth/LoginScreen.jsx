@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Link, useNavigate } from "react-router-dom";
 import { login } from "../../redux/actions/authActions";
+import { RotatingLines } from "react-loader-spinner";
 
 const LoginScreen = () => {
   const dispatch = useDispatch();
@@ -32,7 +33,7 @@ const LoginScreen = () => {
   };
 
   return (
-    <div className="flex justify-center items-center h-screen">
+    <div className="flex justify-center items-center w-full h-screen">
       <div className="flex flex-col gap-4 justify-start items-center w-[400px] border border-[#404040] rounded-lg p-2 bg-[#242423]">
         <h2 className="text-2xl font-bold">Login</h2>
         {error && <p className="text-red-600">{error}</p>}
@@ -67,9 +68,23 @@ const LoginScreen = () => {
 
           <button
             onClick={handleLogin}
-            className="w-[350px] bg-[#424242] p-2 rounded-lg transform transition-all ease-in-out duration-200 hover:opacity-80 active:scale-95"
+            className="flex justify-center items-center mx-auto w-[350px] bg-[#424242] p-2 rounded-lg transform transition-all ease-in-out duration-200 hover:opacity-80 active:scale-95"
           >
-            Loign
+            {loading ? (
+              <RotatingLines
+                visible={true}
+                height="30"
+                width="30"
+                color="grey"
+                strokeWidth="5"
+                animationDuration="0.75"
+                ariaLabel="rotating-lines-loading"
+                wrapperStyle={{}}
+                wrapperClass=""
+              />
+            ) : (
+              "Login"
+            )}
           </button>
 
           <p>

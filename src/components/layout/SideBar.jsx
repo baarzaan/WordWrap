@@ -18,6 +18,7 @@ import CreateGroupDialog from "../CreateGroupDialog";
 import { getGroups } from "@/redux/actions/groupActions";
 import { IoIosSearch } from "react-icons/io";
 import GroupCard from "../GroupCard";
+import { RotatingLines } from "react-loader-spinner";
 
 const SideBar = () => {
   const dispatch = useDispatch();
@@ -37,10 +38,17 @@ const SideBar = () => {
   const searchFriend = useCallback(() => {
     try {
       startTransition(() => {
-        const filteredFriends = friends.filter((friend) =>
-          friend.friendData.username
-            .toLowerCase()
-            .includes(search.toLocaleLowerCase())
+        const filteredFriends = friends.filter(
+          (friend) =>
+            friend.friendData.firstName
+              .toLowerCase()
+              .includes(search.toLocaleLowerCase()) ||
+            friend.friendData.lastName
+              .toLowerCase()
+              .includes(search.toLocaleLowerCase()) ||
+            friend.friendData.username
+              .toLowerCase()
+              .includes(search.toLocaleLowerCase())
         );
         setFilteredFriends(filteredFriends);
 
@@ -107,7 +115,9 @@ const SideBar = () => {
                           type="text"
                           placeholder="Search"
                           value={search}
-                          onChange={(e) => setSearch(e.target.value)}
+                          onChange={(e) =>
+                            setSearch(e.target.value.toLowerCase())
+                          }
                           className="bg-[#424242] text-white p-2 rounded-lg w-full"
                         />
                       </div>
@@ -150,9 +160,19 @@ const SideBar = () => {
             </div>
           </div>
 
-          <div className="flex flex-col justify-start items-start gap-4 w-full p-1 hover:overflow-y-auto">
+          <div className="flex flex-col justify-start items-start gap-4 w-full p-1 overflow-y-auto">
             {isPending ? (
-              <>Loading...</>
+              <RotatingLines
+                visible={true}
+                height="30"
+                width="30"
+                color="grey"
+                strokeWidth="5"
+                animationDuration="0.75"
+                ariaLabel="rotating-lines-loading"
+                wrapperStyle={{}}
+                wrapperClass=""
+              />
             ) : (
               <div className="flex flex-col justify-start items-start gap-4 w-full">
                 <h3 className="text-xl font-bold pb-2">
@@ -163,17 +183,15 @@ const SideBar = () => {
                 ) : (
                   <>
                     {filteredFriends.map((friend) => (
-                      <>
-                        <div
-                          key={friend.id}
-                          className="w-full border-b border-b-[#404040] pb-1"
-                        >
-                          <FriendCard
-                            friend={friend.friendData}
-                            requestStatus={friend.requestStatus}
-                          />
-                        </div>
-                      </>
+                      <div
+                        key={friend.id}
+                        className="w-full border-b border-b-[#404040] pb-1"
+                      >
+                        <FriendCard
+                          friend={friend.friendData}
+                          requestStatus={friend.requestStatus}
+                        />
+                      </div>
                     ))}
                   </>
                 )}

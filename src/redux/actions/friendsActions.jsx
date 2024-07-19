@@ -68,6 +68,7 @@ export const toggleSendFriendRequest =
           },
           friendData: userToFriend,
           createdAt: new Date(),
+          lastMessageSent: new Date(),
         });
 
         await addDoc(userToFriendRequestsCollection, {
@@ -119,6 +120,7 @@ export const acceptFriendRequest =
               isAccepted: true,
             },
             createdAt: new Date(),
+            lastMessageSent: new Date(),
           }
         );
 
@@ -148,6 +150,7 @@ export const acceptFriendRequest =
           "requestStatus.isPending": false,
           "requestStatus.isAccepted": true,
           createdAt: new Date(),
+          lastMessageSent: new Date(),
         });
       }
 

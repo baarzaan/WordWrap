@@ -16,6 +16,7 @@ import {
   sendMessageToGroup,
   updateGroupMessageStatus,
 } from "@/redux/actions/groupActions";
+import { RotatingLines } from "react-loader-spinner";
 
 const ChatScreen = () => {
   const dispatch = useDispatch();
@@ -29,6 +30,7 @@ const ChatScreen = () => {
   const messages = useSelector(
     (state) => state.getMessagesReducer.messages[chatId] || []
   );
+  const sendChatLoading = useSelector((state) => state.sendChatReducer.loading);
   const loading = useSelector((state) => state.getMessagesReducer.loading);
   const error = useSelector((state) => state.getMessagesReducer.error);
   const navigate = useNavigate();
@@ -101,7 +103,7 @@ const ChatScreen = () => {
               <div className="col-span-3 w-full">
                 <div className="relative flex flex-col justify-start items-start gap-10 p-2 h-screen w-full">
                   {/* Chat Header */}
-                  <header className="flex justify-between items-center w-full h-16 px-2 bg-[#242423] rounded-lg">
+                  <header className="sticky top-0 left-0 flex justify-between items-center w-full h-16 px-2 bg-[#242423] rounded-lg">
                     <div className="flex justify-center items-center gap-2">
                       <button
                         title="Close chat"
@@ -138,7 +140,8 @@ const ChatScreen = () => {
                             </>
                           ) : (
                             <div className="flex justify-center items-center gap-2">
-                              {participants.slice(0, 3)
+                              {participants
+                                .slice(0, 3)
                                 .filter(
                                   (participant) =>
                                     participant.username != user.username
@@ -209,7 +212,17 @@ const ChatScreen = () => {
 
                     {loading && (
                       <div className="flex justify-center items-center h-full mx-auto">
-                        Loading...
+                        <RotatingLines
+                          visible={true}
+                          height="30"
+                          width="30"
+                          color="grey"
+                          strokeWidth="5"
+                          animationDuration="0.75"
+                          ariaLabel="rotating-lines-loading"
+                          wrapperStyle={{}}
+                          wrapperClass=""
+                        />
                       </div>
                     )}
                     {error && <p className="text-red-600">{error}</p>}
@@ -262,7 +275,21 @@ const ChatScreen = () => {
                           : "transform transition-all ease-in-out duration-200 hover:bg-[#2b2a2a] active:scale-95"
                       }`}
                     >
-                      Send
+                      {sendChatLoading ? (
+                        <RotatingLines
+                          visible={true}
+                          height="25"
+                          width="25"
+                          color="grey"
+                          strokeWidth="5"
+                          animationDuration="0.75"
+                          ariaLabel="rotating-lines-loading"
+                          wrapperStyle={{}}
+                          wrapperClass=""
+                        />
+                      ) : (
+                        "Send"
+                      )}
                     </button>
                   </div>
                 </div>

@@ -7,6 +7,7 @@ import { toggleSendFriendRequest } from "@/redux/actions/friendsActions";
 import { truncateText } from "@/utils/truncateText";
 import React, { useEffect, useState } from "react";
 import { IoIosClose } from "react-icons/io";
+import { RotatingLines } from "react-loader-spinner";
 import { useDispatch, useSelector } from "react-redux";
 import { Link } from "react-router-dom";
 import ReactTimeago from "react-timeago";
@@ -118,7 +119,19 @@ const FriendCard = ({ friend, requestStatus }) => {
               </>
             )}
 
-            {loading && <>Loading...</>}
+            {loading && (
+              <RotatingLines
+                visible={true}
+                height="25"
+                width="25"
+                color="grey"
+                strokeWidth="5"
+                animationDuration="0.75"
+                ariaLabel="rotating-lines-loading"
+                wrapperStyle={{}}
+                wrapperClass=""
+              />
+            )}
           </div>
         </Link>
       )}

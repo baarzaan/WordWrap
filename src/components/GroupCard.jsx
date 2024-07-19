@@ -1,6 +1,7 @@
 import { getGroupMessages } from "@/redux/actions/groupActions";
 import { truncateText } from "@/utils/truncateText";
 import React, { useEffect, useState } from "react";
+import { RotatingLines } from "react-loader-spinner";
 import { useDispatch, useSelector } from "react-redux";
 import { Link } from "react-router-dom";
 import ReactTimeago from "react-timeago";
@@ -50,7 +51,9 @@ const GroupCard = ({ group }) => {
                             {truncateText(message.message, 10)}
                           </strong>
                         ) : (
-                          <strong className="text-[#4450B5]">New message</strong>
+                          <strong className="text-[#4450B5]">
+                            New message
+                          </strong>
                         )}
                       </>
                     )}
@@ -67,7 +70,19 @@ const GroupCard = ({ group }) => {
           </>
         )}
 
-        {loading && <>Loading...</>}
+        {loading && (
+          <RotatingLines
+            visible={true}
+            height="25"
+            width="25"
+            color="grey"
+            strokeWidth="5"
+            animationDuration="0.75"
+            ariaLabel="rotating-lines-loading"
+            wrapperStyle={{}}
+            wrapperClass=""
+          />
+        )}
       </div>
     </Link>
   );

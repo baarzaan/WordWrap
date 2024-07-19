@@ -4,6 +4,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { Link, useNavigate } from "react-router-dom";
 import { storage } from "../../firebase/firebaseConfig";
 import { register } from "../../redux/actions/authActions";
+import { RotatingLines } from "react-loader-spinner";
 
 const RegisterScreen = () => {
   const dispatch = useDispatch();
@@ -108,7 +109,7 @@ const RegisterScreen = () => {
             type="text"
             placeholder="Username"
             value={username}
-            onChange={(e) => setUsername(e.target.value)}
+            onChange={(e) => setUsername(e.target.value.toLowerCase())}
             required
             className="w-[350px] bg-transparent p-2 border border-[#404040] rounded-lg"
           />
@@ -133,9 +134,23 @@ const RegisterScreen = () => {
 
           <button
             onClick={handleRegister}
-            className="w-[350px] bg-[#424242] p-2 rounded-lg transform transition-all ease-in-out duration-200 hover:opacity-80 active:scale-95"
+            className="flex justify-center items-center mx-auto w-[350px] bg-[#424242] p-2 rounded-lg transform transition-all ease-in-out duration-200 hover:opacity-80 active:scale-95"
           >
-            Register
+            {loading ? (
+              <RotatingLines
+                visible={true}
+                height="30"
+                width="30"
+                color="grey"
+                strokeWidth="5"
+                animationDuration="0.75"
+                ariaLabel="rotating-lines-loading"
+                wrapperStyle={{}}
+                wrapperClass=""
+              />
+            ) : (
+              "Register"
+            )}
           </button>
 
           <p>
