@@ -243,17 +243,14 @@ export const leaveGroup = (groupId, groupMember) => async (dispatch) => {
 
 export const addMemberToGroup = (groupId, member) => async (dispatch) => {
   dispatch({ type: ADD_MEMBER_TO_GROUP_REQUEST });
-  console.log("request sent");
 
   try {
     const groupDoc = doc(db, "groups", groupId);
     await updateDoc(groupDoc, {
       participants: arrayUnion(...member),
     });
-    console.log("members added");
     dispatch({ type: ADD_MEMBER_TO_GROUP_SUCCESS });
   } catch (error) {
     dispatch({ type: ADD_MEMBER_TO_GROUP_FAIL, payload: error.message });
-    console.log("error");
   }
 };
