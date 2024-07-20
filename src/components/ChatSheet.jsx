@@ -19,6 +19,8 @@ import ChatSheetParticipant from "./ChatSheetParticipant";
 import { changeGroupName, leaveGroup } from "@/redux/actions/groupActions";
 import { removeFriend } from "@/redux/actions/friendsActions";
 import { useNavigate } from "react-router-dom";
+import { Dialog, DialogTrigger } from "@radix-ui/react-dialog";
+import AddMemberToGroupDialog from "./AddMemberToGroupDialog";
 
 const ChatSheet = ({ participants, group }) => {
   const dispatch = useDispatch();
@@ -29,7 +31,7 @@ const ChatSheet = ({ participants, group }) => {
   const navigate = useNavigate();
 
   return (
-    <>
+    <div className="w-full">
       <SheetHeader className="border-b border-b-[#707070]">
         <SheetTitle>Details</SheetTitle>
       </SheetHeader>
@@ -83,9 +85,16 @@ const ChatSheet = ({ participants, group }) => {
             </SheetTitle>
 
             {group && (
-              <button className="text-[#e4e4e5] transform transition-all ease-in-out duration-300 hover:text-[#969393] active:scale-95">
-                Add members
-              </button>
+              <Dialog>
+                <DialogTrigger asChild>
+                  <Button
+                    className="text-[#e4e4e5] transform transition-all ease-in-out duration-300 hover:text-[#969393] active:scale-95"
+                  >
+                    Add members
+                  </Button>
+                </DialogTrigger>
+                <AddMemberToGroupDialog group={group} />
+              </Dialog>
             )}
           </div>
 
@@ -222,7 +231,7 @@ const ChatSheet = ({ participants, group }) => {
           </button>
         )}
       </SheetFooter>
-    </>
+    </div>
   );
 };
 

@@ -13,6 +13,9 @@ import {
   where,
 } from "firebase/firestore";
 import {
+  ADD_MEMBER_TO_GROUP_FAIL,
+  ADD_MEMBER_TO_GROUP_REQUEST,
+  ADD_MEMBER_TO_GROUP_SUCCESS,
   CHANGE_GROUP_NAME_FAIL,
   CHANGE_GROUP_NAME_REQUEST,
   CHANGE_GROUP_NAME_SUCCESS,
@@ -232,9 +235,25 @@ export const leaveGroup = (groupId, groupMember) => async (dispatch) => {
     });
     dispatch({
       type: LEAVE_GROUP_SUCCESS,
-      payload: groupMember,
     });
   } catch (error) {
     dispatch({ type: LEAVE_GROUP_FAIL, payload: error.message });
+  }
+};
+
+export const addMemberToGroup = (groupId, member) => async (dispatch) => {
+  dispatch({ type: ADD_MEMBER_TO_GROUP_REQUEST });
+  console.log("request sent");
+
+  try {
+    const groupDoc = doc(db, "groups", groupId);
+    await updateDoc(groupDoc, {
+      participants: arrayUnion(...member),
+    });
+    console.log("members added");
+    dispatch({ type: ADD_MEMBER_TO_GROUP_SUCCESS });
+  } catch (error) {
+    dispatch({ type: ADD_MEMBER_TO_GROUP_FAIL, payload: error.message });
+    console.log("error");
   }
 };

@@ -11,11 +11,6 @@ import { getChats } from "./redux/actions/chatActions";
 function App() {
   const dispatch = useDispatch();
   const loading = useSelector((state) => state.user.loading);
-  const user = useSelector((state) => state.user.user);
-  const error = useSelector((state) => state.user.error);
-  console.log('App component loading:', loading);
-  console.log('App component user:', user);
-  console.log('App component error:', error);
 
   useEffect(() => {
     dispatch(getUser());

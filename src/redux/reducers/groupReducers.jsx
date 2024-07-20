@@ -1,4 +1,7 @@
 import {
+  ADD_MEMBER_TO_GROUP_FAIL,
+  ADD_MEMBER_TO_GROUP_REQUEST,
+  ADD_MEMBER_TO_GROUP_SUCCESS,
   CHANGE_GROUP_NAME_FAIL,
   CHANGE_GROUP_NAME_REQUEST,
   CHANGE_GROUP_NAME_SUCCESS,
@@ -275,6 +278,32 @@ export const leaveGroupReducer = (state = initialState, action) => {
       };
 
     case LEAVE_GROUP_FAIL:
+      return {
+        ...state,
+        loading: false,
+        error: action.payload,
+      };
+
+    default:
+      return { ...state };
+  }
+};
+
+export const addMemberToGroupReducer = (state = initialState, action) => {
+  switch (action.type) {
+    case ADD_MEMBER_TO_GROUP_REQUEST:
+      return {
+        ...state,
+        loading: true,
+      };
+
+    case ADD_MEMBER_TO_GROUP_SUCCESS:
+      return {
+        ...state,
+        loading: false,
+      };
+
+    case ADD_MEMBER_TO_GROUP_FAIL:
       return {
         ...state,
         loading: false,

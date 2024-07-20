@@ -43,7 +43,6 @@ import {
 } from "../constants/friendsConstants";
 
 export const getUser = () => (dispatch) => {
-  console.log("Dispatching AUTH_GET_USER_REQUEST");
   dispatch({ type: AUTH_GET_USER_REQUEST });
 
   try {
@@ -56,11 +55,9 @@ export const getUser = () => (dispatch) => {
           userDoc,
           (snapshot) => {
             const userData = snapshot.data();
-            console.log("Dispatching AUTH_GET_USER_SUCCESS", userData);
             dispatch({ type: AUTH_GET_USER_SUCCESS, payload: userData });
           },
           (error) => {
-            console.error("Error in onSnapshot for user data:", error);
             dispatch({ type: AUTH_GET_USER_FAIL, payload: error.message });
           }
         );
@@ -77,11 +74,9 @@ export const getUser = () => (dispatch) => {
               id: doc.id,
               ...doc.data(),
             }));
-            console.log("Dispatching GET_FRIENDS_SUCCESS", userFriends);
             dispatch({ type: GET_FRIENDS_SUCCESS, payload: userFriends });
           },
           (error) => {
-            console.error("Error in onSnapshot for user friends:", error);
             dispatch({ type: GET_FRIENDS_FAIL, payload: error.message });
           }
         );
@@ -98,17 +93,12 @@ export const getUser = () => (dispatch) => {
               id: doc.id,
               ...doc.data(),
             }));
-            console.log(
-              "Dispatching GET_FRIEND_REQUESTS_SUCCESS",
-              userFriendRequests
-            );
             dispatch({
               type: GET_FRIEND_REQUESTS_SUCCESS,
               payload: userFriendRequests,
             });
           },
           (error) => {
-            console.error("Error in onSnapshot for friend requests:", error);
             dispatch({
               type: GET_FRIEND_REQUESTS_FAIL,
               payload: error.message,
@@ -117,7 +107,6 @@ export const getUser = () => (dispatch) => {
         );
       } else {
         // Handle case where no user is authenticated
-        console.log("No user authenticated");
         dispatch({
           type: AUTH_GET_USER_FAIL,
           payload: "No user authenticated",
@@ -125,7 +114,6 @@ export const getUser = () => (dispatch) => {
       }
     });
   } catch (error) {
-    console.error("Error in getUser action creator:", error);
     dispatch({ type: AUTH_GET_USER_FAIL, payload: error.message });
   }
 };
